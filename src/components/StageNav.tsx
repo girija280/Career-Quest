@@ -1,4 +1,4 @@
-import { useLocation } from "react-router";
+import { useLocation, Link } from "react-router";
 
 const stages = [
   { path: "/intake", label: "Profile", num: 0 },
@@ -12,7 +12,6 @@ const stages = [
 
 export default function StageNav() {
   const loc = useLocation();
-
   const currentIdx = stages.findIndex(s => loc.pathname.startsWith(s.path));
 
   return (
@@ -32,7 +31,12 @@ export default function StageNav() {
           {stages.map((s, i) => {
             const status = i < currentIdx ? "done" : i === currentIdx ? "active" : "pending";
             return (
-              <div key={s.path} style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              /* CHANGED THIS DIV TO A LINK */
+              <Link 
+                to={s.path} 
+                key={s.path} 
+                style={{ display: "flex", alignItems: "center", gap: 4, textDecoration: "none" }}
+              >
                 <div className={`stage-dot ${status}`}>
                   {status === "done" ? "✓" : s.num}
                 </div>
@@ -45,7 +49,7 @@ export default function StageNav() {
                 {i < stages.length - 1 && (
                   <div style={{ width: 20, height: 1, background: i < currentIdx ? "rgba(34,197,94,0.4)" : "rgba(71,85,105,0.3)", marginLeft: 2 }} />
                 )}
-              </div>
+              </Link>
             );
           })}
         </div>
