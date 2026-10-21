@@ -1,7 +1,10 @@
 {
-  "description": "Career Quest guides students and job seekers through personalized educational pathways, helping them choose suitable degrees, colleges, and career options.",
+  "description": "Provides an interactive web experience with an intro page and start feature, designed to engage users through seamless navigation and content access.",
   "robots": {
     "index": false
+  },
+  "icons": {
+    "icon": "favicon.svg"
   },
   "accessibility": {
     "addBypassLinks": false,
