@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Stage 2 — Branch Map | Career Quest</title>
+<link rel="stylesheet" href="intro.css"/>
+<style>
+  .branch-card{padding:20px;position:relative;transition:transform .2s,box-shadow .2s,border-color .2s;cursor:pointer;}
+  .branch-card:hover{transform:translateY(-4px);}
+  .top-badge,.sel-badge{position:absolute;top:-10px;padding:2px 12px;border-radius:20px;font-size:10px;font-weight:800;letter-spacing:.06em;}
+  .top-badge{left:16px;color:var(--bg);}
+  .sel-badge{right:16px;background:linear-gradient(135deg,var(--green),#16a34a);color:var(--bg);}
+
+  .branch-icon-wrap{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+  .branch-name{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:2px;}
+  .branch-meta{font-size:12px;color:var(--muted);}
+  .branch-desc{font-size:13px;color:var(--subtle);line-height:1.5;margin:10px 0 12px;}
+  .skill-chip{font-size:10px;padding:2px 8px;border-radius:12px;background:rgba(15,23,42,.6);color:var(--muted);border:1px solid rgba(125,211,252,.06);}
+  .fit-score{font-size:20px;font-weight:800;line-height:1;}
+
+  .card-actions{display:flex;gap:8px;margin-top:12px;}
+  .ai-btn{font-size:11px;padding:5px 12px;border-radius:8px;cursor:pointer;font-family:'Poppins',sans-serif;font-weight:600;border:1px solid var(--border-2);background:transparent;color:var(--blue);transition:all .2s;}
+  .ai-btn:hover{background:rgba(6,182,212,.08);}
+  .sel-btn{font-size:11px;padding:5px 14px;border-radius:8px;cursor:pointer;font-family:'Poppins',sans-serif;font-weight:700;border:none;transition:all .2s;}
+
+  /* AI Drawer */
+  .drawer-overlay{position:fixed;inset:0;background:rgba(2,16,34,.85);z-index:1000;display:flex;align-items:center;justify-content:center;padding:24px;}
+  .drawer-box{max-width:520px;width:100%;padding:32px;border-radius:20px;}
+  .loading-spin{font-size:36px;animation:spin 1s linear infinite;}
+  @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
+  .key-insight{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--subtle);margin-bottom:6px;}
+</style>
+</head>
+<body>
+
+<nav class="stage-nav">
+  <div class="stage-nav-inner">
+    <a href="index.html" class="stage-logo">⚔ Career Quest</a>
+    <div class="stage-steps" id="stageSteps"></div>
+  </div>
+</nav>
+
+<!-- AI Explain Drawer -->
+<div class="drawer-overlay" id="aiDrawer" style="display:none;">
+  <div class="glass-bright drawer-box">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;">
+      <div>
+        <div style="font-size:11px;color:#7c3aed;font-weight:700;letter-spacing:.08em;margin-bottom:4px;">🤖 AI FIT ANALYSIS · POST /api/explain-branch</div>
+        <h3 style="font-size:22px;font-weight:800;color:var(--navy);margin:0;" id="drawerTitle"></h3>
+      </div>
+      <button onclick="closeDrawer()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px;">✕</button>
+    </div>
+    <div id="drawerBody">
+      <div style="text-align:center;padding:40px 0;"><div class="loading-spin">⚙️</div><p style="color:var(--muted);margin-top:12px;font-size:14px;">Analyzing your trait profile...</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="page-wrap">
+  <div style="margin-bottom:40px;">
+    <div style="font-size:13px;color:var(--blue);font-weight:700;letter-spacing:.1em;margin-bottom:6px;">STAGE 2 · BRANCH MAP</div>
+    <h2 style="font-size:32px;font-weight:800;margin:0 0 8px;background:linear-gradient(135deg,var(--navy),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Your Degree & Branch Map</h2>
+    <p style="color:var(--muted);font-size:15px;">Branches ranked by your Builder DNA. Select one to continue your quest.</p>
+  </div>
+
+  <!-- Sections rendered by JS -->
+  <div id="topSection"></div>
+  <div id="classicSection"></div>
+  <div id="emergingSection"></div>
+
+  <!-- Sticky CTA -->
+  <div class="glass-bright sticky-cta" id="stickyCta" style="display:none;">
+    <div>
+      <div style="font-size:12px;color:var(--muted);">Selected branch</div>
+      <div style="font-size:16px;font-weight:700;color:var(--green);" id="ctaLabel"></div>
+    </div>
+    <a href="step-3-courses.html" class="btn-cyan">Explore Specializations →</a>
+  </div>
+</div>
+
+<script>
+const CQ_KEY='cq_state';
+function loadState(){try{return JSON.parse(localStorage.getItem(CQ_KEY)||'{}');}catch{return{};}}
+function saveState(p){const s=loadState();localStorage.setItem(CQ_KEY,JSON.stringify({...s,...p}));}
+
+// ── Nav ──
+const STAGES=[{n:0,l:'Profile'},{n:1,l:'Quiz'},{n:2,l:'Branch'},{n:3,l:'Course'},{n:4,l:'College'},{n:5,l:'Career'},{n:6,l:'Report'}];
+function renderNav(cur){
+  document.getElementById('stageSteps').innerHTML=STAGES.map((s,i)=>{
+    const st=i<cur?'done':i===cur?'active':'pending';
+    const col=st==='done'?'var(--green)':st==='active'?'var(--blue)':'var(--muted)';
+    const conn=i<STAGES.length-1?`<div class="stage-connector" style="background:${i<cur?'rgba(34,197,94,.3)':'rgba(71,85,105,.2)'}"></div>`:'';
+    return `<div class="stage-dot ${st}">${st==='done'?'✓':s.n}</div><span class="stage-label" style="color:${col}">${s.l}</span>${conn}`;
+  }).join('');
+}
+renderNav(2);
+
+const BRANCHES=[
+  {id:'aiml',name:'AI & Machine Learning',short:'AI/ML',icon:'🧠',type:'emerging',color:'var(--blue)',desc:'Build intelligent systems that learn, reason, and adapt. From deep learning to generative AI.',pkg:'18-45 LPA',demand:98,fit:['ABS','MTH','BLD'],skills:['Python','PyTorch','Statistics','Transformers'],paths:['ML Engineer','AI Researcher','Data Scientist']},
+  {id:'cse',name:'Computer Science & Engineering',short:'CSE',icon:'💻',type:'classic',color:'#7c3aed',desc:'The bedrock of tech — algorithms, systems, OS, networks, and software engineering at scale.',pkg:'12-40 LPA',demand:95,fit:['SYS','ABS','STM'],skills:['DSA','System Design','C++','Java'],paths:['Software Engineer','Backend Engineer','SRE']},
+  {id:'ece',name:'Electronics & Communication Engg.',short:'ECE',icon:'📡',type:'classic',color:'var(--blue)',desc:'Bridging hardware and software — from microcontrollers to 5G networks and embedded systems.',pkg:'8-28 LPA',demand:82,fit:['HW','SYS','MTH'],skills:['VLSI','Embedded C','Signal Processing'],paths:['VLSI Engineer','Embedded Systems','RF Engineer']},
+  {id:'data_science',name:'Data Science & Analytics',short:'DS&A',icon:'📊',type:'emerging',color:'var(--green)',desc:'Translate raw data into business decisions using statistical modeling, visualization, and ML.',pkg:'10-30 LPA',demand:90,fit:['MTH','ABS','FIN'],skills:['Python','SQL','Power BI','Statistics'],paths:['Data Analyst','BI Analyst','Data Engineer']},
+  {id:'cybersec',name:'Cybersecurity',short:'CyberSec',icon:'🔒',type:'emerging',color:'#7c3aed',desc:'Defend systems from adversaries. Ethical hacking, cryptography, and threat intelligence.',pkg:'10-35 LPA',demand:88,fit:['RSK','SYS','AMB'],skills:['Pen Testing','Cryptography','SIEM','Python'],paths:['Security Analyst','Pen Tester','SOC Engineer']},
+  {id:'robotics',name:'Robotics & Automation',short:'Robotics',icon:'🤖',type:'emerging',color:'#f59e0b',desc:'Design autonomous machines — industrial arms to space rovers. Mechatronics meets AI.',pkg:'10-32 LPA',demand:85,fit:['HW','BLD','SYS'],skills:['ROS','Computer Vision','C++','CAD'],paths:['Robotics Engineer','Controls Engineer','Automation Specialist']},
+  {id:'mech',name:'Mechanical Engineering',short:'Mech',icon:'⚙️',type:'classic',color:'#f59e0b',desc:'Design, analyze, and manufacture mechanical systems — automotive, aerospace, and energy.',pkg:'6-20 LPA',demand:72,fit:['HW','STM','SYS'],skills:['AutoCAD','SolidWorks','FEA','Thermodynamics'],paths:['Design Engineer','Mfg. Engineer','ISRO Scientist']},
+  {id:'civil',name:'Civil Engineering',short:'Civil',icon:'🏗️',type:'classic',color:'#84cc16',desc:'Build infrastructure — bridges, dams, smart cities, and structural systems.',pkg:'5-18 LPA',demand:65,fit:['SYS','STM','FIN'],skills:['AutoCAD','STAAD Pro','Surveying'],paths:['Structural Engineer','Urban Planner','Govt. PWD Officer']},
+  {id:'eee',name:'Electrical & Electronics Engg.',short:'EEE',icon:'⚡',type:'classic',color:'#eab308',desc:'Power systems, electric vehicles, smart grids — the energy backbone of the future.',pkg:'7-25 LPA',demand:76,fit:['HW','MTH','SYS'],skills:['Power Systems','Control Theory','MATLAB','EV Tech'],paths:['Power Engineer','EV Systems Engineer','PSU (NTPC)']},
+  {id:'aerospace',name:'Aerospace Engineering',short:'Aero',icon:'🚀',type:'emerging',color:'var(--blue)',desc:'Design aircraft, spacecraft, and propulsion. ISRO, DRDO, and the private space race await.',pkg:'8-28 LPA',demand:80,fit:['MTH','HW','RSK'],skills:['Fluid Mechanics','CFD','Propulsion','MATLAB'],paths:['ISRO Scientist','Aeronautical Engineer','Defense R&D']},
+  {id:'biotech',name:'Biotechnology & Bioinformatics',short:'Biotech',icon:'🧬',type:'emerging',color:'#ec4899',desc:'Merge biology with engineering — gene editing, drug discovery, bioinformatics pipelines.',pkg:'6-24 LPA',demand:78,fit:['ABS','MTH','CRE'],skills:['Python','Genomics','CRISPR','Statistics'],paths:['Bioinformatics Analyst','Pharma R&D','Clinical Researcher']},
+  {id:'chemical',name:'Chemical Engineering',short:'ChemE',icon:'⚗️',type:'classic',color:'#f97316',desc:'Scale chemistry from lab to industry — oil refineries, pharma, polymers, green energy.',pkg:'7-22 LPA',demand:68,fit:['MTH','SYS','STM'],skills:['Process Sim','Thermodynamics','MATLAB'],paths:['Process Engineer','PSU (ONGC)','Pharma R&D']}
+];
+
+const state=loadState();
+const scores=state.quizScores||{ABS:5,BLD:4,SYS:3,MTH:5,HW:2,RSK:3,STM:4,AMB:2,FIN:1,CRE:2};
+
+function branchScore(b){return b.fit.reduce((a,t)=>a+(scores[t]||0),0);}
+const scored=[...BRANCHES].map(b=>({...b,score:branchScore(b)})).sort((a,b)=>b.score-a.score);
+
+let selectedId=state.selectedBranch||null;
+
+function renderCard(b,isTop){
+  const isSel=selectedId===b.id;
+  const borderCol=isSel?'rgba(34,197,94,.5)':isTop?`${b.color}33`:'rgba(125,211,252,.08)';
+  const bgCol=isSel?'rgba(34,197,94,.06)':isTop?`${b.color}0d`:'var(--bg)';
+  const glowShadow=isTop&&!isSel?`0 0 32px ${b.color}1a`:'none';
+  return `<div class="glass branch-card" id="card-${b.id}" onclick="" style="border:1px solid ${borderCol};background:${bgCol};box-shadow:${glowShadow};position:relative;">
+    ${isTop?`<div class="top-badge" style="background:linear-gradient(135deg,${b.color},${b.color}bb);">⭐ TOP MATCH</div>`:''}
+    ${isSel?`<div class="sel-badge">✓ SELECTED</div>`:''}
+    <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:12px;margin-top:${isTop?'12px':'0'};">
+      <div class="branch-icon-wrap" style="background:${b.color}22;">${b.icon}</div>
+      <div style="flex:1;">
+        <div class="branch-name">${b.name}</div>
+        <div class="branch-meta">${b.short} · ${b.type==='emerging'?'🌱 Emerging':'🏛 Classic'}</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="fit-score" style="color:${b.color}">${b.score}</div>
+        <div style="font-size:10px;color:var(--muted);">fit score</div>
+      </div>
+    </div>
+    <p class="branch-desc">${b.desc}</p>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+      ${b.skills.slice(0,3).map(s=>`<span class="skill-chip">${s}</span>`).join('')}
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <div>
+        <span style="font-size:11px;color:var(--green);font-weight:700;">💰 ${b.pkg}</span>
+        <span style="font-size:11px;color:var(--muted);margin-left:12px;">📊 ${b.demand}/100</span>
+      </div>
+      <div class="card-actions">
+        <button class="ai-btn" onclick="openExplain('${b.id}');event.stopPropagation()">🤖 AI Explain</button>
+        <button class="sel-btn" id="selbtn-${b.id}" onclick="selectBranch('${b.id}');event.stopPropagation()"
+          style="background:${isSel?'rgba(34,197,94,.2)':b.color+'22'};color:${isSel?'var(--green)':b.color};">
+          ${isSel?'✓ Selected':'Select'}
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderAll(){
+  const top=scored.slice(0,2), classic=scored.slice(2).filter(b=>b.type==='classic'), emerging=scored.slice(2).filter(b=>b.type==='emerging');
+  document.getElementById('topSection').innerHTML=`
+    <div class="section-divider" style="color:var(--green);margin-bottom:16px;">
+      <div style="flex:1;height:1px;background:rgba(34,197,94,.2)"></div>
+      MOST SUITABLE BRANCHES
+      <div style="flex:1;height:1px;background:rgba(34,197,94,.2)"></div>
+    </div>
+    <div class="grid-2" style="margin-bottom:40px;">${top.map(b=>renderCard(b,true)).join('')}</div>`;
+  document.getElementById('classicSection').innerHTML=`
+    <div class="section-divider" style="color:var(--subtle);margin-bottom:16px;">
+      <div style="flex:1;height:1px;background:rgba(148,163,184,.12)"></div>
+      🏛 CLASSIC BRANCHES
+      <div style="flex:1;height:1px;background:rgba(148,163,184,.12)"></div>
+    </div>
+    <div class="grid-auto" style="margin-bottom:40px;">${classic.map(b=>renderCard(b,false)).join('')}</div>`;
+  document.getElementById('emergingSection').innerHTML=`
+    <div class="section-divider" style="color:#7c3aed;margin-bottom:16px;">
+      <div style="flex:1;height:1px;background:rgba(124,58,237,.2)"></div>
+      🌱 EMERGING BRANCHES
+      <div style="flex:1;height:1px;background:rgba(124,58,237,.2)"></div>
+    </div>
+    <div class="grid-auto" style="margin-bottom:40px;">${emerging.map(b=>renderCard(b,false)).join('')}</div>`;
+  updateCta();
+}
+
+function selectBranch(id){
+  selectedId=id;
+  const b=BRANCHES.find(x=>x.id===id);
+  saveState({selectedBranch:id,selectionHistory:{...loadState().selectionHistory,branches:BRANCHES.map(x=>({selected:x.id===id,label:x.name,stage:'branch'}))}});
+  renderAll();
+}
+
+function updateCta(){
+  const el=document.getElementById('stickyCta');
+  if(selectedId){
+    const b=BRANCHES.find(x=>x.id===selectedId);
+    document.getElementById('ctaLabel').textContent=`${b.icon} ${b.name}`;
+    el.style.display='flex';
+  } else {el.style.display='none';}
+}
+
+// ── Trait narratives (human-readable, strength-framed) ──
+const TRAIT_NARRATIVES = {
+  ABS: {label:'Abstraction Thinking', desc:"You think in abstractions — comfortable with ideas that don't have a physical form. This is the core of research, algorithm design, and AI systems work."},
+  BLD: {label:'Build Drive',          desc:"You have a strong drive to build and ship real things. You're energized when you see something actually work — not just on paper, but in the world."},
+  SYS: {label:'Systems Thinking',     desc:"You naturally see how parts connect into wholes. You'd thrive designing large-scale systems that need to be reliable, scalable, and well-structured."},
+  MTH: {label:'Math Reasoning',       desc:"You're comfortable with mathematical reasoning — the invisible foundation that most advanced engineering branches are built on."},
+  HW:  {label:'Hardware Affinity',    desc:"You're drawn to physical systems — circuits, sensors, and hardware that interact with the real world. This is rare and highly valued in embedded and robotics fields."},
+  RSK: {label:'Risk Appetite',        desc:"You're willing to take calculated risks. This maps well to entrepreneurial roles, research bets, and fast-moving startups where bold choices are rewarded."},
+  STM: {label:'Academic Stamina',     desc:"You have the academic stamina to push through complex, multi-year specializations — a quality that opens doors to top institutions and research careers."},
+  AMB: {label:'Ambiguity Tolerance',  desc:"You're comfortable in ambiguous situations without a clear map. This is exactly what early-stage research, product engineering, and consulting require."},
+  FIN: {label:'Financial Pragmatism', desc:"You think practically about financial outcomes — a quality that helps you make grounded career choices and avoid paths that don't match your real-world goals."},
+  CRE: {label:'Creative Thinking',    desc:"You bring creative thinking to problems. This is valuable in design, UX engineering, innovation-heavy roles, and any field where the right answer isn't yet obvious."}
+};
+
+function buildExplanation(branch, userScores){
+  // Get top 3 traits the user scored highest on, among branch's fit traits first, then overall
+  const allByScore = Object.entries(userScores).sort((a,b)=>b[1]-a[1]);
+  const fitTraits = branch.fit.filter(t => userScores[t] > 0).sort((a,b)=>(userScores[b]||0)-(userScores[a]||0));
+  const topFit = fitTraits.slice(0,3);
+  const otherTop = allByScore.filter(([t])=>!topFit.includes(t)).slice(0,2).map(([t])=>t);
+  const topTraits = [...topFit, ...otherTop].slice(0,3);
+
+  const traitName = t => TRAIT_NARRATIVES[t]?.label || t;
+  const joinNames = arr => arr.map(traitName).join(arr.length > 2 ? ', ' : ' and ').replace(/, ([^,]*)$/, ', and $1');
+
+  const openingLine = topTraits.length >= 2
+    ? `Your strongest qualities — ${joinNames(topTraits)} — make ${branch.name} a natural destination for you.`
+    : `Your profile shows clear alignment with ${branch.name}.`;
+
+  const traitInsights = topFit.slice(0,3).map(t => {
+    const n = TRAIT_NARRATIVES[t];
+    return `<div class="key-insight" style="margin-bottom:12px;padding:12px 14px;background:var(--bg-2);border:1px solid var(--border);border-radius:8px;">
+      <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:4px;">${n?.label || t}</div>
+      <div style="font-size:13px;color:var(--slate);line-height:1.6;">${n?.desc || ''}</div>
+    </div>`;
+  }).join('');
+
+  return {openingLine, traitInsights};
+}
+
+function openExplain(id){
+  const b=BRANCHES.find(x=>x.id===id);
+  document.getElementById('drawerTitle').textContent=b.name;
+  document.getElementById('aiDrawer').style.display='flex';
+  document.getElementById('drawerBody').innerHTML=`
+    <div style="text-align:center;padding:40px 0;">
+      <div style="font-size:32px;margin-bottom:12px;animation:spin 1.5s linear infinite;">⚙️</div>
+      <p style="color:var(--muted);font-size:14px;">Analyzing your trait profile...</p>
+    </div>`;
+  setTimeout(()=>{
+    const fitType = scored.findIndex(x=>x.id===id)<2 ? 'Best Fit' : 'Good Fit';
+    const fitColor = fitType==='Best Fit' ? 'var(--green)' : 'var(--blue)';
+    const fitBg   = fitType==='Best Fit' ? 'var(--green-dim)' : 'var(--blue-dim)';
+    const {openingLine, traitInsights} = buildExplanation(b, scores);
+    document.getElementById('drawerBody').innerHTML=`
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;">
+        <span style="font-size:28px;">${b.icon}</span>
+        <div>
+          <div style="font-size:16px;font-weight:800;color:var(--navy);">${b.name}</div>
+          <span style="font-size:11px;padding:2px 10px;border-radius:20px;background:${fitBg};color:${fitColor};font-weight:700;">${fitType}</span>
+        </div>
+      </div>
+      <p style="font-size:14px;color:var(--slate);line-height:1.7;margin-bottom:20px;font-style:italic;">"${openingLine}"</p>
+      <div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;">Why this fits you</div>
+      ${traitInsights}
+      <div style="padding:14px;background:var(--bg-2);border:1px solid var(--border);border-radius:8px;margin-top:8px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+          <span style="font-size:12px;color:var(--muted);">Avg. Package</span>
+          <span style="font-size:13px;font-weight:700;color:var(--navy);">₹${b.pkg}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+          <span style="font-size:12px;color:var(--muted);">Industry Demand</span>
+          <span style="font-size:13px;font-weight:700;color:var(--green);">${b.demand}/100</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;">
+          <span style="font-size:12px;color:var(--muted);">Career Paths</span>
+          <span style="font-size:12px;font-weight:600;color:var(--slate);">${b.paths.slice(0,2).join(', ')}</span>
+        </div>
+      </div>`;
+  }, 900);
+}
+function closeDrawer(){document.getElementById('aiDrawer').style.display='none';}
+
+renderAll();
+</script>
+</body>
+</html>

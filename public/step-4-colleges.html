@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Stage 3 — Colleges & Cost | Career Quest</title>
+<link rel="stylesheet" href="intro.css"/>
+<style>
+  .college-card { padding: 20px; position: relative; transition: transform .2s, box-shadow .2s; border-radius: var(--radius-lg); border: 1.5px solid var(--border); background: var(--bg); }
+  .college-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  .c-name { font-size: 16px; font-weight: 700; color: var(--navy); margin: 0; }
+  .c-loc { font-size: 12px; color: var(--muted); margin: 2px 0 0; }
+  .c-fee { font-size: 15px; font-weight: 700; }
+  .c-placement { font-size: 18px; font-weight: 800; color: var(--green); }
+  .info-box { padding: 8px 12px; border-radius: 8px; background: var(--bg-2); border: 1px solid var(--border); }
+  .recruiter-chip { font-size: 10px; padding: 2px 8px; border-radius: 12px; background: var(--bg-2); color: var(--muted); border: 1px solid var(--border); }
+  .sch-chip { font-size: 10px; padding: 2px 8px; border-radius: 12px; background: var(--green-dim); color: var(--green); border: 1px solid #bbf7d0; }
+  .pick-btn { width: 100%; padding: 10px; border-radius: 10px; cursor: pointer; font-family: 'Instrument Sans', sans-serif; font-weight: 700; font-size: 13px; border: 1.5px solid var(--blue); background: transparent; color: var(--blue); transition: all .2s; margin-top: 14px; }
+  .pick-btn:hover { background: var(--blue); color: #fff; }
+  .pick-btn.chosen { background: var(--green); border-color: var(--green); color: #fff; }
+
+  .tab-bar { padding: 6px; display: flex; gap: 6px; border-radius: 14px; margin-bottom: 28px; flex-wrap: wrap; }
+
+  .cgl-card { padding: 24px; margin-bottom: 12px; border-radius: var(--radius-lg); border: 1.5px solid var(--border); background: var(--bg); }
+  .cgl-name { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+  .cgl-desc { font-size: 13px; color: var(--muted); margin: 0 0 14px; }
+  .cgl-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+  .cgl-box { padding: 10px 14px; border-radius: 10px; background: var(--bg-2); border: 1px solid var(--border); }
+  .post-chip { font-size: 11px; padding: 2px 10px; border-radius: 12px; background: var(--blue-dim); color: var(--blue); border: 1px solid var(--blue-mid); }
+</style>
+</head>
+<body>
+
+<nav class="stage-nav">
+  <div class="stage-nav-inner">
+    <a href="index.html" class="stage-logo">⚔ Career<span style="color:var(--blue)">Quest</span></a>
+    <div class="stage-steps" id="stageSteps"></div>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <div style="margin-bottom:32px;">
+    <div class="section-label">STAGE 3 · COLLEGES &amp; COST</div>
+    <h2 style="font-size:30px;font-weight:800;margin:0 0 8px;color:var(--navy);letter-spacing:-.02em;">College &amp; Cost Planner</h2>
+    <p id="budgetInfo" style="color:var(--muted);font-size:14px;"></p>
+  </div>
+
+  <!-- Tier tabs -->
+  <div class="glass tab-bar">
+    <button class="tab-btn active" onclick="setTab('tier1')" id="tab-tier1">🥇 Tier 1 (IIT/NIT)</button>
+    <button class="tab-btn" onclick="setTab('tier2')" id="tab-tier2">🥈 Tier 2 (Deemed/Pvt)</button>
+    <button class="tab-btn" onclick="setTab('tier3')" id="tab-tier3">🥉 Tier 3 (State)</button>
+    <button class="tab-btn" onclick="setTab('independent')" id="tab-independent">📝 Independent Exams</button>
+    <button class="tab-btn" onclick="setTab('cgl')" id="tab-cgl">🏛 CGL / Govt / PSU</button>
+  </div>
+
+  <div id="contentArea"></div>
+
+  <!-- Sticky CTA -->
+  <div class="glass-bright sticky-cta" id="stickyCta" style="display:none;margin-top:24px;">
+    <div>
+      <div style="font-size:12px;color:var(--muted);">College selected</div>
+      <div style="font-size:15px;font-weight:700;color:var(--green);" id="ctaLabel"></div>
+    </div>
+    <a href="step-3-courses.html" class="btn-cyan">Explore Specializations →</a>
+  </div>
+</div>
+
+<script>
+const CQ_KEY='cq_state';
+function loadState(){try{return JSON.parse(localStorage.getItem(CQ_KEY)||'{}');}catch{return{};}}
+function saveState(p){const s=loadState();localStorage.setItem(CQ_KEY,JSON.stringify({...s,...p}));}
+function fmtFee(n){return '₹'+(n>=100000?(n/100000).toFixed(1)+'L':(n/1000).toFixed(0)+'K');}
+function fmtSal(n){return '₹'+(n>=100000?(n/100000).toFixed(1)+' LPA':n.toLocaleString());}
+
+const STAGES=[{n:0,l:'Profile'},{n:1,l:'Quiz'},{n:2,l:'Branch'},{n:3,l:'College'},{n:4,l:'Specs'},{n:5,l:'Career'},{n:6,l:'Report'}];
+function renderNav(cur){
+  document.getElementById('stageSteps').innerHTML=STAGES.map((s,i)=>{
+    const st=i<cur?'done':i===cur?'active':'pending';
+    const col=st==='done'?'var(--green)':st==='active'?'var(--blue)':'var(--muted)';
+    return `<div class="stage-dot ${st}">${st==='done'?'✓':s.n}</div><span class="stage-label" style="color:${col}">${s.l}</span>${i<STAGES.length-1?'<div class="stage-connector"></div>':''}`;
+  }).join('');
+}
+renderNav(3);
+
+const COLLEGES=[
+  {id:1,name:'IIT Bombay',loc:'Mumbai, Maharashtra',tier:1,type:'Govt / IIT',rank:1,totalFee:1000000,avgPlacement:2800000,exam:'JEE Advanced',scholarship:true,scholarships:['SC/ST Fee Waiver','MCM Scholarship'],recruiters:['Google','Microsoft','Goldman Sachs','McKinsey'],tag:'flagship'},
+  {id:2,name:'IIT Delhi',loc:'New Delhi',tier:1,type:'Govt / IIT',rank:2,totalFee:1000000,avgPlacement:2500000,exam:'JEE Advanced',scholarship:true,scholarships:['SC/ST Fee Waiver','MCM Scholarship'],recruiters:['Amazon','Flipkart','Google','DRDO'],tag:'flagship'},
+  {id:3,name:'IIT Madras',loc:'Chennai, Tamil Nadu',tier:1,type:'Govt / IIT',rank:3,totalFee:1000000,avgPlacement:2400000,exam:'JEE Advanced',scholarship:true,scholarships:['SC/ST Fee Waiver','Merit Scholarship'],recruiters:['Qualcomm','Apple','Amazon','Razorpay'],tag:'flagship'},
+  {id:4,name:'IIIT Hyderabad',loc:'Hyderabad, Telangana',tier:1,type:'Govt / IIIT',rank:9,totalFee:1200000,avgPlacement:2000000,exam:'JEE Main / UGEE',scholarship:true,scholarships:['UGEE Merit Scholarship'],recruiters:['Google','Adobe','Qualcomm','Flipkart'],tag:'flagship'},
+  {id:5,name:'NIT Trichy',loc:'Tiruchirappalli, Tamil Nadu',tier:1,type:'Govt / NIT',rank:8,totalFee:580000,avgPlacement:1600000,exam:'JEE Main',scholarship:true,scholarships:['Central Sector Scholarship','OBC Scholarship'],recruiters:['TCS','Infosys','Wipro','BHEL'],tag:'nit'},
+  {id:6,name:'NIT Warangal',loc:'Warangal, Telangana',tier:1,type:'Govt / NIT',rank:12,totalFee:560000,avgPlacement:1400000,exam:'JEE Main',scholarship:true,scholarships:['Central Sector Scholarship'],recruiters:['Microsoft','Samsung','TCS','Infosys'],tag:'nit'},
+  {id:7,name:'BITS Pilani',loc:'Pilani, Rajasthan',tier:1,type:'Deemed / Autonomous',rank:6,totalFee:2240000,avgPlacement:2100000,exam:'BITSAT',scholarship:true,scholarships:['Merit-cum-Means','BITS Excellence Award'],recruiters:['Microsoft','Amazon','Cisco','Oracle'],tag:'autonomous'},
+  {id:8,name:'Thapar Institute',loc:'Patiala, Punjab',tier:2,type:'Deemed / Pvt',rank:25,totalFee:1520000,avgPlacement:1200000,exam:'JEE Main + Merit',scholarship:true,scholarships:['Thapar Merit Scholarship'],recruiters:['Samsung','Microsoft','Infosys','L&T'],tag:'flagship'},
+  {id:9,name:'VIT Vellore',loc:'Vellore, Tamil Nadu',tier:2,type:'Deemed / Pvt',rank:15,totalFee:860000,avgPlacement:1100000,exam:'VITEEE',scholarship:true,scholarships:['Merit Scholarship','VIT Excellence Award'],recruiters:['TCS','Cognizant','Infosys','HCL'],tag:'independent'},
+  {id:10,name:'Manipal Institute of Technology',loc:'Manipal, Karnataka',tier:2,type:'Deemed / Pvt',rank:18,totalFee:920000,avgPlacement:900000,exam:'MET (Manipal Entrance Test)',scholarship:true,scholarships:['Academic Excellence Scholarship'],recruiters:['Wipro','Infosys','Amazon','Accenture'],tag:'independent'},
+  {id:11,name:'SRM Institute of Science',loc:'Chennai, Tamil Nadu',tier:2,type:'Deemed / Pvt',rank:22,totalFee:800000,avgPlacement:850000,exam:'SRMJEEE',scholarship:true,scholarships:['SRM Merit Scholarship'],recruiters:['TCS','Infosys','Zoho','Freshworks'],tag:'independent'},
+  {id:12,name:'Amrita Vishwa Vidyapeetham',loc:'Coimbatore, Tamil Nadu',tier:2,type:'Deemed / Pvt',rank:30,totalFee:740000,avgPlacement:780000,exam:'AEEE / JEE Main',scholarship:true,scholarships:['Amrita Merit Scholarship'],recruiters:['TCS','Wipro','Cognizant','IBM'],tag:'independent'},
+  {id:13,name:'SPPU Affiliated Colleges',loc:'Pune, Maharashtra',tier:3,type:'State Univ. Affiliated',rank:45,totalFee:440000,avgPlacement:550000,exam:'MHT-CET',scholarship:true,scholarships:['Rajarshi Scholarship','EBC Freeship'],recruiters:['Persistent','Infosys','TCS','KPIT'],tag:'state'},
+  {id:14,name:'Dr. BATU Lonere',loc:'Lonere, Maharashtra',tier:3,type:'State Technical Univ.',rank:60,totalFee:360000,avgPlacement:420000,exam:'MHT-CET / JEE Main',scholarship:true,scholarships:['Govt. SC/ST/OBC Scholarship','Freeship Card'],recruiters:['TCS BPS','Wipro','Local Industries'],tag:'state'}
+];
+
+const CGL_PATHS=[
+  {id:'ssc_cgl',name:'SSC CGL — Combined Graduate Level',desc:'After B.Tech, appear for SSC CGL to join central government departments as a technical or administrative officer.',salary:'₹44,900–₹1,42,400/mo',stability:'Extremely High',eligibility:'B.Tech Graduate (any branch)',posts:['Income Tax Inspector','Excise Inspector','Junior Statistical Officer'],path:'B.Tech → SSC CGL Exam → Training → Central Govt. Posting'},
+  {id:'gate_psu',name:'GATE → PSU (BHEL / NTPC / ISRO / DRDO)',desc:'GATE score is the primary route to prestigious PSU jobs at BHEL, ONGC, NTPC, ISRO, and DRDO.',salary:'₹60,000–₹1,80,000/mo',stability:'Very High',eligibility:'B.Tech Graduate (relevant branch)',posts:['Junior Engineer at NTPC','Scientist at ISRO/DRDO','Engineer at BHEL/ONGC'],path:'B.Tech → GATE → PSU Selection → Joining'},
+  {id:'upsc_ese',name:'UPSC Engineering Services Exam (IES)',desc:'Most prestigious technical govt. exam. Join CPWD, Railways, Telecom, or Defense as a Class-1 officer.',salary:'₹56,100–₹1,77,500/mo + Grade Pay',stability:'Extremely High',eligibility:'B.Tech (Civil, Mech, ECE, EEE)',posts:['AEE CPWD','Railway Engineer','Defense Technical Officer'],path:'B.Tech → UPSC ESE Prelims → Mains → Interview → Training'}
+];
+
+const TIER_COLORS={'1':'var(--blue)','2':'#7c3aed','3':'var(--green)'};
+const state=loadState();
+const budget=state.profile?.budgetCeiling||0;
+let selectedId=state.selectedCollege||null;
+let currentTab='tier1';
+
+if(budget){document.getElementById('budgetInfo').textContent=`Budget ceiling: ${fmtFee(budget)} · Financial profile: ${state.profile?.financialStatus||'—'}`;}
+
+function collegeCard(c){
+  const isSel=selectedId===c.id;
+  const tc=TIER_COLORS[String(c.tier)]||'var(--blue)';
+  const budgetOk=!budget||c.totalFee<=budget*1.15;
+  return `<div class="college-card" style="border-color:${isSel?'var(--green)':tc+'33'};background:${isSel?'#f0fdf4':'var(--bg)'};position:relative;">
+    ${isSel?`<div style="position:absolute;top:-9px;right:14px;background:var(--green);color:#fff;padding:2px 10px;border-radius:20px;font-size:10px;font-weight:800;">✓ SELECTED</div>`:''}
+    ${!budgetOk?`<div style="position:absolute;top:-9px;left:14px;background:#fef2f2;color:#dc2626;padding:2px 10px;border-radius:20px;font-size:10px;font-weight:800;border:1px solid #fecaca;">⚠ Over Budget</div>`:''}
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;margin-top:${!budgetOk?'12px':'0'};">
+      <div style="flex:1;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+          <span class="tier-badge tier-${c.tier}">Tier ${c.tier}</span>
+          <span style="font-size:11px;color:var(--muted);background:var(--bg-2);padding:1px 8px;border-radius:12px;border:1px solid var(--border);">${c.type}</span>
+          ${c.scholarship?`<span style="font-size:11px;color:var(--green);">🎓</span>`:''}
+        </div>
+        <p class="c-name">${c.name}</p>
+        <p class="c-loc">📍 ${c.loc}</p>
+      </div>
+      <div style="text-align:right;flex-shrink:0;margin-left:12px;">
+        <div class="c-placement">${fmtSal(c.avgPlacement)}</div>
+        <div style="font-size:10px;color:var(--muted);">Avg. Placement</div>
+      </div>
+    </div>
+    <div class="grid-2" style="margin-bottom:12px;gap:8px;">
+      <div class="info-box"><div style="font-size:10px;color:var(--muted);margin-bottom:2px;">TOTAL FEES</div>
+        <div class="c-fee" style="color:${budgetOk?'var(--navy)':'#dc2626'}">${fmtFee(c.totalFee)}</div></div>
+      <div class="info-box"><div style="font-size:10px;color:var(--muted);margin-bottom:2px;">ENTRANCE EXAM</div>
+        <div style="font-size:12px;font-weight:700;color:${tc}">${c.exam}</div></div>
+    </div>
+    ${c.scholarships.length?`<div style="margin-bottom:10px;"><div style="font-size:10px;color:var(--muted);margin-bottom:4px;">SCHOLARSHIPS</div><div style="display:flex;gap:6px;flex-wrap:wrap;">${c.scholarships.map(s=>`<span class="sch-chip">${s}</span>`).join('')}</div></div>`:''}
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:0;">
+      ${c.recruiters.map(r=>`<span class="recruiter-chip">${r}</span>`).join('')}
+    </div>
+    <button class="pick-btn${isSel?' chosen':''}" onclick="pickCollege(${c.id},'${c.name.replace(/'/g,"\\'")}')">
+      ${isSel?'✓ This College Selected':'Select This College'}
+    </button>
+  </div>`;
+}
+
+function cglCard(p){
+  return `<div class="cgl-card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+      <div><h3 class="cgl-name">${p.name}</h3><p class="cgl-desc">${p.desc}</p></div>
+      <span style="font-size:11px;padding:4px 12px;border-radius:20px;background:var(--green-dim);color:var(--green);font-weight:700;flex-shrink:0;margin-left:16px;border:1px solid #bbf7d0;">${p.stability}</span>
+    </div>
+    <div class="cgl-grid">
+      <div class="cgl-box"><div style="font-size:10px;color:var(--muted);margin-bottom:4px;">SALARY</div><div style="font-size:13px;font-weight:700;color:var(--green);">${p.salary}</div></div>
+      <div class="cgl-box"><div style="font-size:10px;color:var(--muted);margin-bottom:4px;">ELIGIBILITY</div><div style="font-size:12px;font-weight:600;color:var(--navy);">${p.eligibility}</div></div>
+      <div class="cgl-box"><div style="font-size:10px;color:var(--muted);margin-bottom:4px;">STABILITY</div><div style="font-size:13px;font-weight:700;color:var(--blue);">${p.stability}</div></div>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">🗺 ${p.path}</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;">${p.posts.map(x=>`<span class="post-chip">${x}</span>`).join('')}</div>
+  </div>`;
+}
+
+function render(){
+  let html='';
+  if(currentTab==='cgl'){
+    html=CGL_PATHS.map(cglCard).join('')+`<div style="margin-top:24px;text-align:center;"><a href="step-3-courses.html" class="btn-outline">Skip to Specializations →</a></div>`;
+  } else {
+    const filters={
+      tier1: c=>c.tier===1&&c.tag!=='autonomous'&&c.tag!=='independent',
+      tier2: c=>c.tier===2&&c.tag!=='independent',
+      tier3: c=>c.tier===3,
+      independent: c=>c.tag==='independent'||c.tag==='autonomous'
+    };
+    const list=COLLEGES.filter(filters[currentTab]||(()=>true));
+    html=`<div class="grid-auto-lg">${list.map(collegeCard).join('')}</div>`;
+  }
+  document.getElementById('contentArea').innerHTML=html;
+}
+
+function setTab(tab){
+  currentTab=tab;
+  document.querySelectorAll('.tab-bar .tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  render();
+}
+
+function pickCollege(id,name){
+  selectedId=id;
+  saveState({selectedCollege:id});
+  document.getElementById('ctaLabel').textContent=name;
+  document.getElementById('stickyCta').style.display='flex';
+  render();
+}
+
+render();
+if(selectedId){
+  const c=COLLEGES.find(x=>x.id===selectedId);
+  if(c){document.getElementById('ctaLabel').textContent=c.name;document.getElementById('stickyCta').style.display='flex';}
+}
+</script>
+</body>
+</html>

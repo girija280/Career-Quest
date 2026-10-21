@@ -1,0 +1,10 @@
+{
+  "description": "Career Quest guides students and job seekers through personalized educational pathways, helping them choose suitable degrees, colleges, and career options.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Stage 1 — Discovery Quiz | Career Quest</title>
+<link rel="stylesheet" href="intro.css"/>
+<style>
+body { background: var(--bg-2); }
+
+.quiz-shell { max-width: 700px; margin: 0 auto; padding: 32px 20px 80px; }
+
+.section-intro {
+  text-align: center; padding: 48px 32px;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius-xl); box-shadow: var(--shadow-md);
+}
+.section-intro-icon { font-size: 56px; margin-bottom: 16px; }
+.section-intro-label { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--blue); margin-bottom: 8px; }
+.section-intro-title { font-size: 26px; font-weight: 800; color: var(--navy); margin-bottom: 10px; letter-spacing: -.02em; }
+.section-intro-desc { font-size: 15px; color: var(--muted); line-height: 1.7; max-width: 440px; margin: 0 auto 28px; }
+.persona-pill {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 5px 12px; margin-bottom: 14px; border-radius: 20px;
+  background: var(--blue-dim); border: 1px solid var(--blue-mid);
+  color: var(--blue); font-size: 11px; font-weight: 700; letter-spacing: .04em;
+}
+.section-meta { display: flex; justify-content: center; gap: 28px; margin-bottom: 28px; }
+.section-meta-val { font-size: 22px; font-weight: 800; color: var(--navy); }
+.section-meta-key { font-size: 11px; color: var(--muted); font-weight: 500; margin-top: 2px; }
+
+.progress-area { margin-bottom: 20px; }
+.progress-labels { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.q-counter { font-size: 13px; font-weight: 600; color: var(--navy); }
+.section-marker { font-size: 12px; font-weight: 700; color: var(--blue); }
+
+.q-card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 28px; box-shadow: var(--shadow-sm); margin-bottom: 16px; }
+.q-type-tag { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; margin-bottom: 14px; }
+.q-text { font-size: 17px; font-weight: 600; color: var(--navy); line-height: 1.55; margin-bottom: 20px; }
+
+.opts-list { display: flex; flex-direction: column; gap: 9px; }
+.opt-btn {
+  width: 100%; padding: 13px 16px; border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border); background: var(--bg);
+  color: var(--slate); font-family: 'Inter', sans-serif; font-size: 14px;
+  text-align: left; cursor: pointer; transition: all .15s; line-height: 1.5;
+  display: flex; align-items: flex-start; gap: 12px;
+}
+.opt-btn:hover:not(:disabled) { border-color: var(--blue-mid); background: var(--blue-dim); color: var(--navy); }
+.opt-btn:disabled { cursor: default; }
+.opt-btn.selected { border-color: var(--blue); background: var(--blue-dim); color: var(--navy); font-weight: 500; }
+.opt-btn.correct { border-color: var(--green); background: var(--green-dim); color: var(--green); font-weight: 600; }
+.opt-btn.wrong { border-color: var(--red); background: var(--red-dim); color: var(--red); font-weight: 600; }
+.opt-key {
+  width: 22px; height: 22px; border-radius: 6px; border: 1.5px solid var(--border-2);
+  font-size: 11px; font-weight: 800; color: var(--muted);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
+}
+.opt-btn.selected .opt-key { border-color: var(--blue); color: var(--blue); }
+.opt-btn.correct .opt-key { border-color: var(--green); color: var(--green); }
+.opt-btn.wrong .opt-key { border-color: var(--red); color: var(--red); }
+
+.trait-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; min-height: 28px; }
+.trait-chip { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; border: 1px solid; animation: fadeUp .3s ease both; }
+
+.results-card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 32px; box-shadow: var(--shadow-md); }
+.dna-bars { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+.dna-row { display: flex; align-items: center; gap: 10px; }
+.dna-label { font-size: 12px; font-weight: 600; color: var(--slate); width: 140px; flex-shrink: 0; }
+.dna-bar-bg { flex: 1; height: 7px; background: var(--bg-3); border-radius: 99px; overflow: hidden; }
+.dna-bar-fill { height: 100%; border-radius: 99px; animation: barFill .8s ease-out forwards; }
+.dna-val { font-size: 12px; font-weight: 800; width: 28px; text-align: right; }
+
+.top3-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 28px; }
+.top3-card { padding: 18px; border: 1px solid var(--border); border-radius: var(--radius); text-align: center; }
+.top3-rank { font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 6px; }
+.top3-icon { font-size: 26px; margin-bottom: 6px; }
+.top3-name { font-size: 13px; font-weight: 700; color: var(--navy); }
+
+.accuracy-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 20px; }
+.acc-card { padding: 14px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); text-align: center; }
+.acc-val { font-size: 22px; font-weight: 800; margin-bottom: 2px; }
+.acc-label { font-size: 11px; color: var(--muted); }
+.locked-action {
+  width: 100%; padding: 14px; margin-top: 8px; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); background: var(--bg-3); color: var(--muted);
+  font-family: 'Instrument Sans', sans-serif; font-size: 15px; font-weight: 700;
+  cursor: not-allowed;
+}
+.path-lock-note {
+  margin-top: 10px; text-align: center; color: var(--amber); font-size: 12px;
+}
+.stage-profile-link { display: flex; align-items: center; text-decoration: none; }
+.profile-summary {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 10px;
+  margin-bottom: 20px; padding: 16px; background: var(--bg);
+  border: 1px solid var(--border); border-radius: var(--radius);
+}
+.profile-summary-item { min-width: 0; }
+.profile-summary-key {
+  color: var(--muted); font-size: 10px; font-weight: 700;
+  letter-spacing: .07em; text-transform: uppercase;
+}
+.profile-summary-value {
+  color: var(--navy); font-size: 13px; font-weight: 700;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.result-secondary-actions {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px;
+}
+.result-secondary-actions .btn-outline { width: 100%; }
+
+@media (max-width:600px) {
+  .top3-grid, .accuracy-grid { grid-template-columns: 1fr; }
+  .profile-summary { grid-template-columns: 1fr; }
+  .result-secondary-actions { grid-template-columns: 1fr; }
+  .q-text { font-size: 15px; }
+  .section-intro { padding: 32px 20px; }
+}
+</style>
+</head>
+<body>
+
+<nav class="stage-nav">
+  <div class="stage-nav-inner">
+    <a href="index.html" class="stage-logo">⚔ Career<span style="color:var(--blue)">Quest</span></a>
+    <div class="stage-steps" id="stageSteps"></div>
+  </div>
+</nav>
+
+<div class="quiz-shell">
+
+  <!-- Section Intro -->
+  <div id="sectionIntroView">
+    <div class="section-intro">
+      <div class="section-intro-icon" id="introIcon"></div>
+      <div class="section-intro-label" id="introLabel"></div>
+      <div class="persona-pill" id="personaPill"></div>
+      <div class="section-intro-title" id="introTitle"></div>
+      <p class="section-intro-desc" id="introDesc"></p>
+      <div class="section-meta">
+        <div><div class="section-meta-val" id="introQCount"></div><div class="section-meta-key">Questions</div></div>
+        <div><div class="section-meta-val" id="introTime"></div><div class="section-meta-key">Est. time</div></div>
+        <div><div class="section-meta-val" id="introType"></div><div class="section-meta-key">Format</div></div>
+      </div>
+      <button class="btn-cyan" style="font-size:15px;padding:13px 36px;" onclick="startSection()">Begin Section →</button>
+    </div>
+  </div>
+
+  <!-- Quiz -->
+  <div id="quizView" style="display:none;">
+    <div class="progress-area">
+      <div class="progress-labels">
+        <span class="q-counter" id="qCounter"></span>
+        <span class="section-marker" id="sectionMarker"></span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    </div>
+    <div class="q-card">
+      <div class="q-type-tag" id="qTypeTag"></div>
+      <div class="q-text" id="qText"></div>
+      <div class="opts-list" id="optsList"></div>
+    </div>
+    <div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;margin-bottom:6px;display:none;" id="chipsLabel">Your emerging strengths</div>
+    <div class="trait-chips" id="traitChips"></div>
+  </div>
+
+  <!-- Results -->
+  <div id="resultsView" style="display:none;">
+    <div style="margin-bottom:20px;">
+      <div class="section-label">STAGE 1 COMPLETE</div>
+      <h2 style="font-size:28px;font-weight:800;color:var(--navy);margin:4px 0 6px;letter-spacing:-.02em;">Your Builder DNA</h2>
+      <p style="color:var(--muted);font-size:14px;margin:0;">Based on your responses across all 5 sections.</p>
+    </div>
+    <div class="profile-summary" id="profileSummary"></div>
+    <div class="accuracy-grid" id="accuracyGrid"></div>
+    <div class="results-card">
+      <div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:16px;">Trait Score Distribution</div>
+      <div class="dna-bars" id="dnaBars"></div>
+      <hr class="divider"/>
+      <div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px;">Your Top 3 Strengths</div>
+      <div class="top3-grid" id="top3Grid"></div>
+      <div id="resultsAction"></div>
+    </div>
+  </div>
+</div>
+
+<script src="quiz-question-banks.js"></script>
+<script>
+const CQ_KEY='cq_state';
+function loadState(){try{return JSON.parse(localStorage.getItem(CQ_KEY)||'{}');}catch{return{};}}
+function saveState(p){const s=loadState();localStorage.setItem(CQ_KEY,JSON.stringify({...s,...p}));}
+
+const BTECH_ROUTES = {
+  '12th Pass':[4,6],
+  'Diploma Holder':[3,4,5],
+  'Job Seeker':[4]
+};
+function isBtechRoute(persona,horizon){
+  return (BTECH_ROUTES[persona]||[]).includes(Number(horizon));
+}
+const savedProfile=loadState().profile;
+const isValidBtechProfile=isBtechRoute(savedProfile?.persona,savedProfile?.horizon);
+
+const USE_API_QUESTIONS = false;
+
+const TRAIT_META = {
+  ABS:{label:'Abstraction Thinking', icon:'🔮', color:'#7c3aed'},
+  BLD:{label:'Build Drive',          icon:'🔨', color:'#2563eb'},
+  SYS:{label:'Systems Thinking',     icon:'⚙',  color:'#0891b2'},
+  MTH:{label:'Math Reasoning',       icon:'📐', color:'#6d28d9'},
+  HW: {label:'Hardware Affinity',    icon:'🔌', color:'#d97706'},
+  RSK:{label:'Risk Appetite',        icon:'🎲', color:'#dc2626'},
+  STM:{label:'Academic Stamina',     icon:'🏋',  color:'#16a34a'},
+  AMB:{label:'Ambiguity Tolerance',  icon:'🌫', color:'#0284c7'},
+  FIN:{label:'Financial Pragmatism', icon:'💰', color:'#059669'},
+  CRE:{label:'Creative Thinking',    icon:'🎨', color:'#ec4899'}
+};
+
+const PERSONA_CONTENT = {
+  '12th Pass': {
+    knowledgeName:'Science & Technology',
+    knowledgeDesc:'Questions from the science and technology foundation expected after Class 12.',
+    aptitudeName:'Mathematics',
+    aptitudeDesc:'Core mathematics from your Class 12 syllabus and its use in engineering.',
+    scenarioDesc:'Study and college dilemmas that reveal your decision style and engineering readiness.'
+  },
+  'Diploma Holder': {
+    knowledgeName:'Diploma to B.Tech Readiness',
+    knowledgeDesc:'Practical engineering fundamentals and lateral-entry awareness for your next step into B.Tech.',
+    aptitudeName:'Applied Engineering Aptitude',
+    aptitudeDesc:'Workshop, measurement, circuits, and applied calculation questions suited to diploma learners.',
+    scenarioDesc:'Lateral-entry, bridge-course, and practical project choices matched to diploma students.'
+  },
+  'B.Tech Graduate': {
+    knowledgeName:'Graduate Pathway Readiness',
+    knowledgeDesc:'Industry, GATE, specialization, and postgraduate concepts for B.Tech graduates.',
+    aptitudeName:'Graduate Engineering Aptitude',
+    aptitudeDesc:'Quantitative and systems questions that help separate industry, M.Tech, MBA, and research paths.',
+    scenarioDesc:'Career, specialization, placement, and postgraduate decisions for B.Tech graduates.'
+  },
+  'M.Tech Passed': {
+    knowledgeName:'Research & Leadership Readiness',
+    knowledgeDesc:'Research methods, technology leadership, and advanced engineering practice for M.Tech graduates.',
+    aptitudeName:'Advanced Analytical Aptitude',
+    aptitudeDesc:'Research interpretation, optimization, and advanced systems reasoning for specialist roles.',
+    scenarioDesc:'Research, PhD, teaching, consulting, and technical-leadership choices for M.Tech graduates.'
+  },
+  'Job Seeker': {
+    knowledgeName:'Employability Readiness',
+    knowledgeDesc:'Workplace technology, hiring, portfolios, and professional fundamentals for job seekers.',
+    aptitudeName:'Workplace Problem Solving',
+    aptitudeDesc:'Practical data, estimation, prioritization, and troubleshooting questions used at work.',
+    scenarioDesc:'Interview, upskilling, workplace, and career-switch decisions for job seekers and professionals.'
+  }
+};
+
+const persona = savedProfile?.persona || '12th Pass';
+const personaContent = PERSONA_CONTENT[persona] || PERSONA_CONTENT['12th Pass'];
+const SECTIONS = [
+  {id:'iq',   label:'Section 1 of 5', name:'IQ & Logic', icon:'🧩', desc:'Test your logical reasoning and abstract thinking. These questions reveal how you process structured problems.', time:'4 min', format:'MCQ'},
+  {id:'gk',   label:'Section 2 of 5', name:personaContent.knowledgeName, icon:'🌐', desc:personaContent.knowledgeDesc, time:'4 min', format:'MCQ'},
+  {id:'math', label:'Section 3 of 5', name:personaContent.aptitudeName, icon:'📐', desc:personaContent.aptitudeDesc, time:'4 min', format:'MCQ'},
+  {id:'sj',   label:'Section 4 of 5', name:'Pathway Decisions', icon:'⚖', desc:personaContent.scenarioDesc, time:'3 min', format:'Scenario'},
+  {id:'pa',   label:'Section 5 of 5', name:'Personality Assessment',icon:'🪞', desc:'Preference questions about how you think and work. Be honest — there are no right or wrong answers here.', time:'4 min', format:'Preference'}
+];
+
+function buildQuestions(){
+  return window.CQ_QUESTION_BANKS[persona] || window.CQ_QUESTION_BANKS['12th Pass'];
+}
+
+let scores={ABS:0,BLD:0,SYS:0,MTH:0,HW:0,RSK:0,STM:0,AMB:0,FIN:0,CRE:0};
+let accuracy={iq:{c:0,t:0},gk:{c:0,t:0},math:{c:0,t:0}};
+let sectionIdx=0, qIdxInSection=0;
+let allSectionQs=[], currentQs=[], answered=false;
+let QUESTIONS;
+
+const STAGES=[{n:0,l:'Profile'},{n:1,l:'Quiz'},{n:2,l:'Branch'},{n:3,l:'College'},{n:4,l:'Specs'},{n:5,l:'Career'},{n:6,l:'Report'}];
+function renderNav(cur){
+  document.getElementById('stageSteps').innerHTML=STAGES.map((s,i)=>{
+    const st=i<cur?'done':i===cur?'active':'pending';
+    const col=st==='done'?'var(--green)':st==='active'?'var(--blue)':'var(--muted)';
+    const step=`<div class="stage-dot ${st}">${st==='done'?'✓':s.n}</div><span class="stage-label" style="color:${col}">${s.l}</span>`;
+    const content=i===0?`<a class="stage-profile-link" href="step-0-intake.html?mode=edit" aria-label="View or edit profile">${step}</a>`:step;
+    return `${content}${i<STAGES.length-1?'<div class="stage-connector"></div>':''}`;
+  }).join('');
+}
+renderNav(1);
+
+function init(){
+  QUESTIONS=buildQuestions();
+  allSectionQs=SECTIONS.map(s=>QUESTIONS[s.id]);
+  showSectionIntro(0);
+}
+
+function showSectionIntro(idx){
+  sectionIdx=idx;
+  const sec=SECTIONS[idx];
+  const qs=allSectionQs[idx];
+  document.getElementById('quizView').style.display='none';
+  document.getElementById('resultsView').style.display='none';
+  document.getElementById('sectionIntroView').style.display='block';
+  document.getElementById('introIcon').textContent=sec.icon;
+  document.getElementById('introLabel').textContent=sec.label;
+  document.getElementById('personaPill').textContent=`Personalized for ${persona}`;
+  document.getElementById('introTitle').textContent=sec.name;
+  document.getElementById('introDesc').textContent=sec.desc;
+  document.getElementById('introQCount').textContent=qs.length;
+  document.getElementById('introTime').textContent=sec.time;
+  document.getElementById('introType').textContent=sec.format;
+}
+
+function startSection(){
+  currentQs=allSectionQs[sectionIdx];
+  qIdxInSection=0;
+  document.getElementById('sectionIntroView').style.display='none';
+  document.getElementById('quizView').style.display='block';
+  renderQuestion();
+}
+
+function totalBefore(idx){return SECTIONS.slice(0,idx).reduce((a,_,i)=>a+allSectionQs[i].length,0);}
+function totalAll(){return SECTIONS.reduce((a,_,i)=>a+allSectionQs[i].length,0);}
+
+function renderQuestion(){
+  answered=false;
+  const q=currentQs[qIdxInSection];
+  const sec=SECTIONS[sectionIdx];
+  const gi=totalBefore(sectionIdx)+qIdxInSection;
+  const tot=totalAll();
+  document.getElementById('qCounter').textContent=`Question ${gi+1} of ${tot}`;
+  document.getElementById('sectionMarker').textContent=sec.name;
+  document.getElementById('progressFill').style.width=`${(gi/tot)*100}%`;
+  const colors={mcq:'#2563eb',scenario:'#7c3aed',preference:'#16a34a'};
+  const lbls={mcq:'📊 Knowledge MCQ',scenario:'⚖ Situational',preference:'🪞 Personality'};
+  const tag=document.getElementById('qTypeTag');
+  tag.textContent=lbls[q.type]; tag.style.cssText=`background:${colors[q.type]}18;color:${colors[q.type]};border:1px solid ${colors[q.type]}30;`;
+  document.getElementById('qText').textContent=q.q;
+  const keys=['A','B','C','D'];
+  document.getElementById('optsList').innerHTML=q.opts.map((o,i)=>`
+    <button class="opt-btn" id="opt${i}" onclick="pickOption(${i})">
+      <span class="opt-key">${keys[i]}</span><span>${o.text}</span>
+    </button>`).join('');
+}
+
+function pickOption(idx){
+  if(answered) return;
+  answered=true;
+  const q=currentQs[qIdxInSection];
+  const sec=SECTIONS[sectionIdx];
+  const isMcq=q.type==='mcq';
+  q.opts.forEach((_,i)=>document.getElementById('opt'+i).disabled=true);
+  if(isMcq){
+    const ci=q.opts.findIndex(o=>o.correct);
+    if(idx===ci){ document.getElementById('opt'+idx).classList.add('correct'); if(accuracy[sec.id]) accuracy[sec.id].c++; }
+    else { document.getElementById('opt'+idx).classList.add('wrong'); if(ci>=0) document.getElementById('opt'+ci).classList.add('correct'); }
+    if(accuracy[sec.id]) accuracy[sec.id].t++;
+    const tr=q.opts[idx].tr||{}; Object.keys(tr).forEach(t=>scores[t]=(scores[t]||0)+tr[t]);
+    if(idx!==ci&&ci>=0){ const ct=q.opts[ci].tr||{}; Object.keys(ct).forEach(t=>scores[t]=(scores[t]||0)+Math.round(ct[t]*.3)); }
+  } else {
+    document.getElementById('opt'+idx).classList.add('selected');
+    const tr=q.opts[idx].tr||{}; Object.keys(tr).forEach(t=>scores[t]=(scores[t]||0)+tr[t]);
+  }
+  renderLiveTraits();
+  setTimeout(()=>{
+    qIdxInSection++;
+    if(qIdxInSection<currentQs.length) renderQuestion();
+    else if(sectionIdx<SECTIONS.length-1) showSectionIntro(sectionIdx+1);
+    else showResults();
+  }, isMcq?900:650);
+}
+
+function renderLiveTraits(){
+  const sorted=Object.entries(scores).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const lbl=document.getElementById('chipsLabel');
+  if(sorted.length>0) lbl.style.display='block';
+  document.getElementById('traitChips').innerHTML=sorted.map(([t,v])=>{
+    const m=TRAIT_META[t];
+    return `<span class="trait-chip" style="background:${m.color}12;color:${m.color};border-color:${m.color}30;">${m.icon} ${m.label} <strong>${v}</strong></span>`;
+  }).join('');
+}
+
+function showResults(){
+  saveState({
+    quizScores:{...scores},
+    quizPersona:persona,
+    quizAccuracy:{
+      iq:   accuracy.iq.t   ? Math.round(accuracy.iq.c/accuracy.iq.t*100)     : null,
+      gk:   accuracy.gk.t   ? Math.round(accuracy.gk.c/accuracy.gk.t*100)     : null,
+      math: accuracy.math.t ? Math.round(accuracy.math.c/accuracy.math.t*100) : null
+    }
+  });
+  document.getElementById('quizView').style.display='none';
+  document.getElementById('sectionIntroView').style.display='none';
+  document.getElementById('resultsView').style.display='block';
+  const profileItems=[
+    {key:'Current status',value:savedProfile?.persona||'Not set'},
+    {key:'Study plan',value:savedProfile?.horizon?`${savedProfile.horizon} year path`:'Not set'},
+    {key:'Location',value:savedProfile?.location||'Not set'}
+  ];
+  document.getElementById('profileSummary').innerHTML=profileItems.map(item=>`
+    <div class="profile-summary-item">
+      <div class="profile-summary-key">${item.key}</div>
+      <div class="profile-summary-value">${item.value}</div>
+    </div>`).join('');
+  const accSecs=[
+    {id:'iq',l:SECTIONS.find(s=>s.id==='iq').name},
+    {id:'gk',l:SECTIONS.find(s=>s.id==='gk').name},
+    {id:'math',l:SECTIONS.find(s=>s.id==='math').name}
+  ];
+  document.getElementById('accuracyGrid').innerHTML=accSecs.map(s=>{
+    const a=accuracy[s.id]; const pct=a.t?Math.round(a.c/a.t*100):0;
+    const col=pct>=70?'var(--green)':pct>=40?'var(--amber)':'var(--red)';
+    return `<div class="acc-card"><div class="acc-val" style="color:${col}">${a.t?pct+'%':'—'}</div><div class="acc-label">${s.l}</div></div>`;
+  }).join('');
+  const sorted=Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+  const mx=sorted[0]?.[1]||1;
+  document.getElementById('dnaBars').innerHTML=sorted.map(([t,v],i)=>{
+    const m=TRAIT_META[t]; const pct=Math.round(v/mx*100); const top=i<3;
+    return `<div class="dna-row"><span class="dna-label">${m.icon} ${m.label}</span><div class="dna-bar-bg"><div class="dna-bar-fill" style="width:${pct}%;background:${top?m.color:'var(--border-2)'};animation-delay:${i*.07}s"></div></div><span class="dna-val" style="color:${top?m.color:'var(--subtle)'}">${v}</span></div>`;
+  }).join('');
+  const ranks=['PRIMARY','SECONDARY','TERTIARY'];
+  document.getElementById('top3Grid').innerHTML=sorted.slice(0,3).map(([t],i)=>{
+    const m=TRAIT_META[t];
+    return `<div class="top3-card" style="border-color:${m.color}25;background:${m.color}06"><div class="top3-rank" style="color:${m.color}">${ranks[i]}</div><div class="top3-icon">${m.icon}</div><div class="top3-name">${m.label}</div></div>`;
+  }).join('');
+  const primaryAction=isValidBtechProfile
+    ? '<a href="step-2-branches.html" class="btn-cyan" style="width:100%;padding:14px;font-size:15px;text-align:center;display:block;margin-top:8px;">Discover Your Branch Map →</a>'
+    : '<button class="locked-action" type="button" disabled>Branch Map Locked — B.Tech paths only</button><p class="path-lock-note">Your Builder DNA is ready. Branch recommendations currently continue only for B.Tech-seeking study plans.</p>';
+  document.getElementById('resultsAction').innerHTML=`
+    ${primaryAction}
+    <div class="result-secondary-actions">
+      <a href="step-0-intake.html?mode=edit" class="btn-outline">View or Edit Profile</a>
+      <button type="button" class="btn-outline" onclick="resetQuiz()">Retake Quiz</button>
+    </div>`;
+}
+
+function resetQuiz(){
+  const state=loadState();
+  ['quizScores','quizAccuracy','quizPersona','selectedBranch','selectedCourse','selectedCollege','selectedTier','selectionHistory'].forEach(key=>delete state[key]);
+  localStorage.setItem(CQ_KEY,JSON.stringify(state));
+  window.location.href='step-1-quiz.html';
+}
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Stage 6 — Advice & Report | Career Quest</title>
+<link rel="stylesheet" href="intro.css"/>
+<style>
+  .summary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:0;}
+  .sum-box{padding:12px 14px;border-radius:10px;}
+  .sum-key{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
+  .sum-val{font-size:13px;font-weight:700;color:var(--navy);}
+
+  .tab-bar{padding:6px;display:flex;gap:6px;border-radius:14px;margin-bottom:28px;flex-wrap:wrap;}
+
+  .advice-card{padding:20px;margin-bottom:14px;}
+  .advice-name{font-size:15px;font-weight:700;color:var(--navy);margin:0 0 4px;}
+  .advice-sub{font-size:12px;color:var(--muted);margin:0 0 10px;}
+  .advice-amt{font-size:14px;font-weight:800;color:var(--green);}
+  .advice-deadline{font-size:12px;color:var(--muted);}
+  .advice-link{font-size:12px;color:var(--blue);}
+  .info-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+  .info-cell{font-size:12px;color:var(--subtle);}
+  .info-label{font-size:10px;color:var(--muted);}
+
+  .cert-card{padding:18px;}
+  .cert-name{font-size:14px;font-weight:700;color:var(--navy);margin:0 0 4px;}
+  .cert-by{font-size:12px;color:var(--muted);margin-bottom:8px;}
+  .cert-boost{font-size:12px;font-weight:700;color:var(--green);}
+  .cert-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;}
+  .cert-cell{font-size:12px;color:var(--subtle);}
+
+  .addon-card{padding:18px;display:flex;gap:16px;}
+  .addon-icon{font-size:32px;flex-shrink:0;}
+  .addon-name{font-size:15px;font-weight:700;color:var(--navy);margin:0 0 4px;}
+  .addon-desc{font-size:13px;color:var(--muted);line-height:1.5;margin:0;}
+  .addon-tag{font-size:10px;padding:2px 8px;border-radius:12px;background:rgba(245,158,11,.12);color:#f59e0b;font-weight:700;margin-left:8px;}
+
+  .cta-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:32px;}
+
+  /* Print styles */
+  @media print{
+    body{background:white!important;color:black!important;}
+    .stage-nav,.tab-bar,.cta-row{display:none!important;}
+    .glass,.glass-bright{background:white!important;border:1px solid #ccc!important;box-shadow:none!important;}
+    .page-wrap{max-width:100%!important;}
+    #contentArea > div{display:block!important;}
+    h1,h2{color:black!important;-webkit-text-fill-color:black!important;}
+  }
+</style>
+</head>
+<body>
+
+<nav class="stage-nav">
+  <div class="stage-nav-inner">
+    <a href="index.html" class="stage-logo">⚔ Career<span style="color:var(--blue)">Quest</span></a>
+    <div class="stage-steps" id="stageSteps"></div>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <!-- Header -->
+  <div style="margin-bottom:32px;">
+    <div style="font-size:13px;color:var(--green);font-weight:700;letter-spacing:.1em;margin-bottom:6px;">STAGE 6 · FINAL ADVICE</div>
+    <h2 style="font-size:30px;font-weight:800;margin:0 0 8px;background:linear-gradient(135deg,var(--navy),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Extra Advice Layer & Report</h2>
+    <p style="color:var(--muted);font-size:14px;">Loans, scholarships, certifications, and your complete career report in one place.</p>
+  </div>
+
+  <!-- Summary Card -->
+  <div class="glass-bright" style="padding:24px;margin-bottom:32px;">
+    <div style="font-size:13px;font-weight:700;color:var(--green);margin-bottom:16px;letter-spacing:.06em;">🎉 YOUR QUEST SUMMARY</div>
+    <div class="summary-grid" id="summaryGrid"></div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="glass tab-bar">
+    <button class="tab-btn active" onclick="setTab('scholarships')" id="tab-scholarships">🎓 Scholarships</button>
+    <button class="tab-btn" onclick="setTab('loans')" id="tab-loans">🏦 Education Loans</button>
+    <button class="tab-btn" onclick="setTab('certs')" id="tab-certs">📜 Certifications</button>
+    <button class="tab-btn" onclick="setTab('addons')" id="tab-addons">⚡ Industry Add-ons</button>
+  </div>
+
+  <div id="contentArea"></div>
+
+  <!-- CTAs -->
+  <div class="cta-row">
+    <button class="btn-cyan" onclick="window.print()" style="padding:14px;font-size:14px;">📄 Download PDF Summary Report</button>
+    <button class="btn-outline" onclick="restartQuest()" style="padding:14px;font-size:14px;">🔄 Restart Quest</button>
+  </div>
+</div>
+
+<script>
+const CQ_KEY='cq_state';
+function loadState(){try{return JSON.parse(localStorage.getItem(CQ_KEY)||'{}');}catch{return{};}}
+
+const STAGES=[{n:0,l:'Profile'},{n:1,l:'Quiz'},{n:2,l:'Branch'},{n:3,l:'College'},{n:4,l:'Specs'},{n:5,l:'Career'},{n:6,l:'Report'}];
+function renderNav(cur){
+  document.getElementById('stageSteps').innerHTML=STAGES.map((s,i)=>{
+    const st=i<cur?'done':i===cur?'active':'pending';
+    const col=st==='done'?'var(--green)':st==='active'?'var(--blue)':'var(--muted)';
+    const conn=i<STAGES.length-1?`<div class="stage-connector" style="background:${i<cur?'rgba(34,197,94,.3)':'rgba(71,85,105,.2)'}"></div>`:'';
+    return `<div class="stage-dot ${st}">${st==='done'?'✓':s.n}</div><span class="stage-label" style="color:${col}">${s.l}</span>${conn}`;
+  }).join('');
+}
+renderNav(6);
+
+const state=loadState();
+const fin=state.profile?.financialStatus||'Medium';
+
+// ── Summary ──
+const BRANCH_NAMES={aiml:'AI & ML',cse:'CSE',ece:'ECE',data_science:'DS&A',cybersec:'Cybersecurity',robotics:'Robotics',mech:'Mechanical',civil:'Civil',eee:'EEE',aerospace:'Aerospace',biotech:'Biotech',chemical:'Chemical Engineering'};
+const COLLEGE_NAMES={1:'IIT Bombay',2:'IIT Delhi',3:'BITS Pilani',4:'NIT Trichy',5:'VIT Vellore',6:'Manipal IT',7:'SRM SIST',8:'Thapar',9:'Amrita',10:'SPPU Colleges',11:'Dr. BATU'};
+
+document.getElementById('summaryGrid').innerHTML=[
+  {k:'Persona',v:state.profile?.persona||'—'},
+  {k:'Horizon',v:(state.profile?.horizon||4)+' Years'},
+  {k:'Branch',v:BRANCH_NAMES[state.selectedBranch]||'—'},
+  {k:'Course',v:state.selectedCourse?.replace(/_/g,' ')||'—'},
+  {k:'College',v:COLLEGE_NAMES[state.selectedCollege]||'—'},
+  {k:'Tier',v:state.selectedTier||'—'},
+  {k:'Financial',v:state.profile?.financialStatus||'—'},
+  {k:'Location',v:state.profile?.location||'—'}
+].map(i=>`<div class="glass sum-box"><div class="sum-key">${i.k}</div><div class="sum-val">${i.v}</div></div>`).join('');
+
+// ── Data ──
+const SCHOLARSHIPS={
+  Low:[
+    {name:'National Scholarship Portal (NSP) — SC/ST/OBC/EBC',amt:'₹20,000–₹50,000/yr',deadline:'Oct–Nov',link:'scholarships.gov.in'},
+    {name:'Central Sector Scholarship Scheme (CSSS)',amt:'₹12,000–₹20,000/yr',deadline:'Sep',link:'scholarships.gov.in'},
+    {name:'Inspire Scholarship — DST',amt:'₹80,000/yr',deadline:'Nov',link:'online-inspire.gov.in'},
+    {name:'PM-YASASVI Scheme',amt:'Up to ₹1,25,000/yr',deadline:'Oct',link:'yet-pm-yashasvi.ntaonline.in'},
+    {name:'Tata Trusts Education Grant',amt:'Up to ₹50,000/yr',deadline:'Rolling',link:'tatatrusts.org'}
+  ],
+  Medium:[
+    {name:"HDFC Bank Parivartan's ECS Scholarship",amt:'₹75,000/yr',deadline:'Aug–Sep',link:'hdfcbank.com/scholarship'},
+    {name:'L&T Build India Scholarship',amt:'₹60,000/yr',deadline:'Oct',link:'lntecc.com/scholarship'},
+    {name:'Aditya Birla Capital Scholarship',amt:'₹65,000/yr',deadline:'Rolling',link:'adityabirlacapital.com'},
+    {name:'Google India Scholarship (GHCI)',amt:'USD 1,000 + mentorship',deadline:'Jul',link:'ghcindia.anitab.org'}
+  ],
+  High:[
+    {name:'DAAD Scholarship (Germany MS)',amt:'Full funding + stipend',deadline:'Nov',link:'daad.de/en'},
+    {name:'Fulbright-Nehru Fellowship (USA)',amt:'Full MS funding',deadline:'Jul',link:'usief.org.in'},
+    {name:'Mitacs Globalink (Canada)',amt:'CAD 10,000+',deadline:'Oct',link:'mitacs.ca'}
+  ]
+};
+
+const LOANS=[
+  {bank:'SBI Scholar Loan',limit:'₹40 Lakh (Tier 1)',rate:'8.15% p.a.',moratorium:'Course + 1 yr',notes:'No collateral up to ₹7.5L. IIT/NIT premium access.'},
+  {bank:'Axis Bank Education Loan',limit:'₹75 Lakh',rate:'11.5–13%',moratorium:'Course + 6 mo',notes:'Fast processing; higher rate; wider coverage.'},
+  {bank:'HDFC Credila',limit:'₹1.5 Crore',rate:'10.5–12.5%',moratorium:'Course + 12 mo',notes:'Specialized education lender; co-applicant required.'},
+  {bank:'Bank of Baroda Baroda Vidya',limit:'₹80 Lakh',rate:'9.0% p.a.',moratorium:'Course + 6 mo',notes:'Govt. bank; subsidized for SC/ST under CSIS scheme.'}
+];
+
+const CERTS=[
+  {name:'AWS Cloud Practitioner / Solutions Architect',by:'Amazon Web Services',duration:'2–4 weeks',cost:'₹12,000 (exam)',boost:'+15–30% salary premium',cat:'Cloud'},
+  {name:'Google ML Crash Course + TF Dev Certificate',by:'Google',duration:'3–6 weeks',cost:'₹10,000 (exam)',boost:'+20–40% ML job eligibility',cat:'AI/ML'},
+  {name:'Meta Back-End Developer Certificate',by:'Meta / Coursera',duration:'8 weeks',cost:'Free (audit)',boost:'Portfolio + FAANG credibility',cat:'Backend'},
+  {name:'Certified Ethical Hacker (CEH)',by:'EC-Council',duration:'8 weeks',cost:'₹45,000',boost:'Security role gateway',cat:'Security'},
+  {name:'CFA Level 1 (for quant / fintech)',by:'CFA Institute',duration:'6 months',cost:'₹40,000',boost:'+Finance domain entry',cat:'Finance'},
+  {name:'GATE Self-Study (PSU/M.Tech)',by:'Self / Made Easy / NPTEL',duration:'6–12 months',cost:'₹15,000–₹40,000',boost:'PSU + M.Tech IIT gateway',cat:'Govt.'}
+];
+
+const ADDONS=[
+  {icon:'🌐',name:'Open Source Contributions',desc:'Contribute to TensorFlow, PyTorch, or React. A merged PR at a major project is worth more than 3 internships on your resume.',tag:'Free'},
+  {icon:'🏆',name:'Kaggle / LeetCode Profiles',desc:'Top 1% on Kaggle signals ML excellence. LeetCode 250+ problems + contest rank demonstrates CS fundamentals.',tag:'Free'},
+  {icon:'🔬',name:'Research Internships (SRIP / SURGE)',desc:'IIT Bombay SRIP and IIT Kanpur SURGE offer summer research internships for top UG students — ₹10,000/mo stipend.',tag:'Paid (₹10K/mo)'},
+  {icon:'⚡',name:'Hackathons (Smart India / DevPost)',desc:'Smart India Hackathon, Google Solution Challenge, and MLH Fellowship are signal-builders that top companies scout.',tag:'Free'},
+  {icon:'✍️',name:'Technical Blogging / YouTube',desc:'Write on Medium, Substack, or dev.to. Founders and hiring managers follow writers who explain complex concepts clearly.',tag:'Free'},
+  {icon:'🤝',name:'Industry Mentorship Programs',desc:'LinkedIn Learning Path Mentors, IIT Alumni networks, and Headstart.in connect you with professionals in your domain.',tag:'Free–₹5K/yr'}
+];
+
+// ── Renderers ──
+function renderScholarships(){
+  const list=SCHOLARSHIPS[fin]||SCHOLARSHIPS.Medium;
+  return `<div class="glass" style="padding:12px 16px;border-left:3px solid var(--green);margin-bottom:16px;border-radius:10px;">
+    <span style="font-size:13px;color:var(--muted);">Showing scholarships for <strong style="color:var(--green);">${fin} Income</strong> profile.</span>
+  </div>`+list.map(s=>`<div class="glass advice-card card-hover" style="border:1px solid rgba(34,197,94,.12);">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+      <h3 class="advice-name">${s.name}</h3>
+      <span class="advice-amt" style="flex-shrink:0;margin-left:12px;">${s.amt}</span>
+    </div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+      <span class="advice-deadline">📅 Deadline: ${s.deadline}</span>
+      <span class="advice-link">🔗 ${s.link}</span>
+    </div>
+  </div>`).join('');
+}
+
+function renderLoans(){
+  return LOANS.map(l=>`<div class="glass advice-card card-hover">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+      <h3 class="advice-name">${l.bank}</h3>
+      <span style="font-size:14px;font-weight:800;color:var(--blue);flex-shrink:0;margin-left:12px;">${l.rate}</span>
+    </div>
+    <div class="info-row">
+      <div><span class="info-label">Max Limit: </span><span class="info-cell">${l.limit}</span></div>
+      <div><span class="info-label">Moratorium: </span><span class="info-cell">${l.moratorium}</span></div>
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin:0;">${l.notes}</p>
+  </div>`).join('')+`<div class="glass" style="padding:16px 20px;border:1px solid rgba(6,182,212,.15);border-radius:14px;margin-top:8px;">
+    <p style="font-size:13px;color:var(--subtle);margin:0;line-height:1.6;">💡 <strong style="color:var(--blue);">Pro Tip:</strong> Under the <strong>CSIS (Credit-Linked Subsidy Scheme)</strong>, SC/ST students at IITs/NITs get interest subvention during the moratorium period. Apply through your college admissions office.</p>
+  </div>`;
+}
+
+function renderCerts(){
+  return `<div class="grid-auto-lg">${CERTS.map(c=>`<div class="glass cert-card card-hover">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">
+      <h3 class="cert-name">${c.name}</h3>
+      <span style="font-size:10px;padding:2px 8px;border-radius:12px;background:rgba(6,182,212,.12);color:var(--blue);font-weight:700;flex-shrink:0;margin-left:8px;">${c.cat}</span>
+    </div>
+    <p class="cert-by">by ${c.by}</p>
+    <div class="cert-grid">
+      <div><span class="info-label">Duration: </span><span class="cert-cell">${c.duration}</span></div>
+      <div><span class="info-label">Cost: </span><span class="cert-cell">${c.cost}</span></div>
+    </div>
+    <div class="cert-boost">🚀 ${c.boost}</div>
+  </div>`).join('')}</div>`;
+}
+
+function renderAddons(){
+  return ADDONS.map(a=>`<div class="glass addon-card card-hover" style="margin-bottom:12px;">
+    <div class="addon-icon">${a.icon}</div>
+    <div>
+      <div style="display:flex;align-items:center;margin-bottom:4px;">
+        <h3 class="addon-name">${a.name}</h3>
+        <span class="addon-tag">${a.tag}</span>
+      </div>
+      <p class="addon-desc">${a.desc}</p>
+    </div>
+  </div>`).join('');
+}
+
+const RENDERERS={scholarships:renderScholarships,loans:renderLoans,certs:renderCerts,addons:renderAddons};
+let activeTab='scholarships';
+
+function setTab(tab){
+  activeTab=tab;
+  document.querySelectorAll('.tab-bar .tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  document.getElementById('contentArea').innerHTML=RENDERERS[tab]();
+}
+
+function restartQuest(){
+  localStorage.removeItem(CQ_KEY);
+  window.location.href='index.html';
+}
+
+setTab('scholarships');
+</script>
+</body>
+</html>

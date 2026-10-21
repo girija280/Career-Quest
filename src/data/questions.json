@@ -1,0 +1,114 @@
+[
+  {
+    "id": 1,
+    "question": "You have a weekend project: Build a robot arm OR design an algorithm to sort a billion records in under 1 second. Which excites you more?",
+    "options": [
+      { "text": "Robot arm — I want to see it move!", "traits": { "HW": 3, "BLD": 2 } },
+      { "text": "Sorting algorithm — pure mathematical elegance.", "traits": { "MTH": 3, "ABS": 2 } }
+    ]
+  },
+  {
+    "id": 2,
+    "question": "Your team's app is down in production at 2 AM. You're on-call. Your reaction?",
+    "options": [
+      { "text": "Adrenaline rush — I've already SSH'd in and am reading logs.", "traits": { "SYS": 3, "RSK": 2 } },
+      { "text": "Methodically create a runbook first, then fix calmly.", "traits": { "SYS": 2, "STM": 2 } }
+    ]
+  },
+  {
+    "id": 3,
+    "question": "You discover a complex bug that will take 3 weeks to trace. How do you feel?",
+    "options": [
+      { "text": "Excited — it's a puzzle that needs me.", "traits": { "ABS": 3, "STM": 2 } },
+      { "text": "Anxious — I'd rather build new features.", "traits": { "BLD": 2, "CRE": 1 } }
+    ]
+  },
+  {
+    "id": 4,
+    "question": "You're given 10 crore rupees to invest. Which do you pick?",
+    "options": [
+      { "text": "Start a high-risk tech startup — huge upside.", "traits": { "RSK": 3, "AMB": 2 } },
+      { "text": "Low-risk index funds + a safe govt job on the side.", "traits": { "FIN": 3, "STM": 1 } }
+    ]
+  },
+  {
+    "id": 5,
+    "question": "You're building a new product. Your preferred role?",
+    "options": [
+      { "text": "Writing the core engine — nobody else touches my architecture.", "traits": { "SYS": 3, "ABS": 2 } },
+      { "text": "UX & interface — I want users to love how it feels.", "traits": { "CRE": 3, "BLD": 1 } }
+    ]
+  },
+  {
+    "id": 6,
+    "question": "Math class: you hit a proof you can't crack in 2 hours. You:",
+    "options": [
+      { "text": "Stay up all night — I must solve it myself.", "traits": { "MTH": 3, "STM": 2 } },
+      { "text": "Collaborate and look up similar proofs to build intuition.", "traits": { "MTH": 1, "AMB": 2 } }
+    ]
+  },
+  {
+    "id": 7,
+    "question": "Your dream project at a big tech company:",
+    "options": [
+      { "text": "Designing the next-gen chip architecture for AI inference.", "traits": { "HW": 3, "MTH": 2, "ABS": 1 } },
+      { "text": "Building the recommendation engine that serves 2 billion users.", "traits": { "ABS": 3, "SYS": 2, "BLD": 1 } }
+    ]
+  },
+  {
+    "id": 8,
+    "question": "Financial pressure: your family expects you to start earning ASAP. How does this change your plan?",
+    "options": [
+      { "text": "I'll take a corporate job and build skills; passion later.", "traits": { "FIN": 3, "STM": 1 } },
+      { "text": "I'll hustle — internships, freelancing, startup — passion now.", "traits": { "RSK": 3, "AMB": 2 } }
+    ]
+  },
+  {
+    "id": 9,
+    "question": "Your team needs a leader on a vague, open-ended project with no clear spec. You:",
+    "options": [
+      { "text": "Step up — ambiguity is where I shine.", "traits": { "AMB": 3, "RSK": 2 } },
+      { "text": "Ask for a defined scope; I execute brilliantly within constraints.", "traits": { "SYS": 2, "STM": 2 } }
+    ]
+  },
+  {
+    "id": 10,
+    "question": "If you could master one of these by next year, which?",
+    "options": [
+      { "text": "Quantum computing fundamentals.", "traits": { "MTH": 3, "ABS": 3 } },
+      { "text": "Building an autonomous delivery drone.", "traits": { "HW": 3, "BLD": 2 } }
+    ]
+  },
+  {
+    "id": 11,
+    "question": "A recruiter offers you two options after graduation:",
+    "options": [
+      { "text": "₹12 LPA at a stable MNC with structured growth.", "traits": { "FIN": 2, "STM": 2 } },
+      { "text": "₹6 LPA + 0.5% equity at a Series A startup.", "traits": { "RSK": 3, "AMB": 2 } }
+    ]
+  },
+  {
+    "id": 12,
+    "question": "When you imagine your most satisfying day at work, it looks like:",
+    "options": [
+      { "text": "Deploying code that millions of people use instantly.", "traits": { "SYS": 2, "BLD": 3 } },
+      { "text": "Presenting a research paper that changes how the field thinks.", "traits": { "MTH": 2, "ABS": 2, "AMB": 1 } }
+    ]
+  },
+  {
+    "id": 13,
+    "question": "You have to pick one thing to be the best in the world at:",
+    "options": [
+      { "text": "Machine Learning & AI research.", "traits": { "MTH": 3, "ABS": 2, "STM": 2 } },
+      { "text": "Embedded systems & robotics engineering.", "traits": { "HW": 3, "SYS": 2, "BLD": 1 } }
+    ]
+  },
+  {
+    "id": 14,
+    "question": "Your ideal B.Tech elective mix:",
+    "options": [
+      { "text": "Computer Vision + NLP + Reinforcement Learning.", "traits": { "ABS": 3, "MTH": 2 } },
+      { "text": "VLSI Design + Power Systems + IoT Prototyping.", "traits": { "HW": 3, "SYS": 2 } }
+    ]
+  }
+]

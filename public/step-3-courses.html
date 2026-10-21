@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Stage 4 — Specializations | Career Quest</title>
+<link rel="stylesheet" href="intro.css"/>
+<style>
+.spec-card {
+  border: 1.5px solid var(--border); border-radius: var(--radius-lg);
+  background: var(--bg); overflow: hidden; transition: border-color .2s, box-shadow .2s;
+}
+.spec-card.selected-card { border-color: var(--green); box-shadow: 0 0 0 3px var(--green-dim); }
+.spec-card.expanded-card { border-color: var(--border-2); box-shadow: var(--shadow-md); }
+
+.spec-header {
+  padding: 18px 20px; cursor: pointer; display: flex;
+  align-items: flex-start; justify-content: space-between; gap: 12px;
+  transition: background .15s;
+}
+.spec-header:hover { background: var(--bg-2); }
+.spec-name { font-size: 14px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+.spec-tagline { font-size: 12px; color: var(--muted); }
+.spec-header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+.diff-pill {
+  font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px;
+}
+.expand-icon { font-size: 14px; color: var(--subtle); transition: transform .2s; }
+.spec-card.expanded-card .expand-icon { transform: rotate(180deg); }
+
+.spec-body {
+  display: none; padding: 0 20px 20px; border-top: 1px solid var(--border);
+  animation: fadeUp .2s ease;
+}
+.spec-card.expanded-card .spec-body { display: block; }
+
+.spec-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 14px 0; }
+.spec-detail-box {
+  padding: 12px 14px; background: var(--bg-2); border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.spec-detail-label { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 4px; }
+.spec-detail-val { font-size: 13px; font-weight: 600; color: var(--navy); }
+.spec-detail-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+.tools-row { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
+.tool-chip { font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 600; }
+
+.select-btn {
+  width: 100%; padding: 11px; border-radius: var(--radius-sm);
+  font-family: 'Instrument Sans', sans-serif; font-weight: 700; font-size: 14px;
+  border: 1.5px solid var(--blue); background: var(--blue); color: #fff;
+  cursor: pointer; transition: all .15s; margin-top: 4px;
+}
+.select-btn:hover { background: var(--blue-hover); }
+.select-btn.chosen { background: var(--green); border-color: var(--green); }
+
+.toggle-wrap { padding: 5px; display: flex; gap: 6px; border-radius: 12px; margin-bottom: 24px; max-width:480px; }
+
+.sel-pill {
+  position: absolute; top: -9px; left: 16px;
+  background: var(--green); color: #fff;
+  padding: 2px 10px; border-radius: 20px;
+  font-size: 10px; font-weight: 800;
+}
+.emg-pill {
+  position: absolute; top: -9px; right: 16px;
+  background: var(--purple-dim); color: var(--purple); border: 1px solid var(--purple-border);
+  padding: 2px 10px; border-radius: 20px; font-size: 10px; font-weight: 800;
+}
+
+.spec-card { position: relative; }
+
+@media (max-width:640px) {
+  .spec-detail-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav class="stage-nav">
+  <div class="stage-nav-inner">
+    <a href="index.html" class="stage-logo">⚔ Career<span style="color:var(--blue)">Quest</span></a>
+    <div class="stage-steps" id="stageSteps"></div>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <!-- Header -->
+  <div style="margin-bottom:28px;">
+    <div class="section-label">STAGE 4 · SPECIALIZATIONS</div>
+    <div style="display:flex;align-items:center;gap:12px;margin:6px 0 6px;">
+      <div id="branchIcon" style="width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;background:var(--blue-dim);">🎯</div>
+      <div>
+        <h2 id="branchTitle" style="font-size:26px;font-weight:800;margin:0;color:var(--navy);letter-spacing:-.02em;"></h2>
+        <p style="color:var(--muted);font-size:13px;margin:0;">Explore specializations — expand each card, then choose your track</p>
+      </div>
+    </div>
+    <div class="glass" id="statsStrip" style="padding:12px 20px;margin-top:16px;display:flex;gap:24px;flex-wrap:wrap;border-radius:12px;"></div>
+  </div>
+
+  <!-- Toggle -->
+  <div class="glass toggle-wrap">
+    <button class="tab-btn active" id="tabEst" onclick="setTab('established')">🏛 Established Foundations</button>
+    <button class="tab-btn" id="tabEmer" onclick="setTab('emerging')">🌱 Emerging Specializations</button>
+  </div>
+
+  <!-- Grid -->
+  <div style="display:flex;flex-direction:column;gap:10px;" id="specsGrid"></div>
+
+  <!-- Sticky CTA -->
+  <div class="glass-bright sticky-cta" id="stickyCta" style="display:none;margin-top:24px;">
+    <div>
+      <div style="font-size:12px;color:var(--muted);">Specialization chosen</div>
+      <div style="font-size:15px;font-weight:700;color:var(--green);" id="ctaLabel"></div>
+    </div>
+    <a href="step-5-careers.html" class="btn-cyan">View Career Outlook →</a>
+  </div>
+</div>
+
+<script>
+const CQ_KEY='cq_state';
+function loadState(){try{return JSON.parse(localStorage.getItem(CQ_KEY)||'{}');}catch{return{};}}
+function saveState(p){const s=loadState();localStorage.setItem(CQ_KEY,JSON.stringify({...s,...p}));}
+
+const STAGES=[{n:0,l:'Profile'},{n:1,l:'Quiz'},{n:2,l:'Branch'},{n:3,l:'College'},{n:4,l:'Specs'},{n:5,l:'Career'},{n:6,l:'Report'}];
+function renderNav(cur){
+  document.getElementById('stageSteps').innerHTML=STAGES.map((s,i)=>{
+    const st=i<cur?'done':i===cur?'active':'pending';
+    const col=st==='done'?'var(--green)':st==='active'?'var(--blue)':'var(--muted)';
+    return `<div class="stage-dot ${st}">${st==='done'?'✓':s.n}</div><span class="stage-label" style="color:${col}">${s.l}</span>${i<STAGES.length-1?'<div class="stage-connector"></div>':''}`;
+  }).join('');
+}
+renderNav(4);
+
+const ALL_SPECS={
+  aiml:{
+    established:[
+      {id:'ml_found',name:'Machine Learning Foundations',tagline:'Classical algorithms: the bedrock of ML practice',desc:'Regression, SVM, random forests, gradient boosting — the toolkit every ML practitioner must own before moving to deep learning.',diff:4.0,tools:['Python','scikit-learn','NumPy','Pandas'],outcome:'ML Engineer · Data Scientist',salary:'₹12–28 LPA',institutes:['IIT Bombay','IIIT Hyderabad','IIT Madras']},
+      {id:'deep_learn',name:'Deep Learning & Neural Networks',tagline:'CNNs, Transformers, and optimization at depth',desc:'Build models that see, hear, and reason. Covers CNNs, RNNs, Transformers, and training optimization techniques used at every top AI lab.',diff:4.5,tools:['PyTorch','TensorFlow','CUDA','JAX'],outcome:'Deep Learning Engineer · AI Researcher',salary:'₹18–45 LPA',institutes:['IIT Delhi','IISc','IIIT Hyderabad']},
+      {id:'nlp',name:'Natural Language Processing',tagline:'LLMs, RAG, and the tech behind ChatGPT',desc:'Learn how modern language models work — from tokenization and embeddings to fine-tuning GPT-style models and building RAG pipelines.',diff:4.5,tools:['HuggingFace','LangChain','spaCy','BERT'],outcome:'NLP Engineer · AI Product Engineer',salary:'₹20–50 LPA',institutes:['IIT Bombay','IIIT-H','CMU (abroad)']},
+      {id:'cv',name:'Computer Vision',tagline:'Teach machines to see and understand images',desc:'Object detection, segmentation, 3D reconstruction, and vision transformers. Powers self-driving cars, medical imaging, and AR.',diff:4.2,tools:['OpenCV','YOLO','PyTorch','MediaPipe'],outcome:'Computer Vision Engineer · AR Engineer',salary:'₹16–40 LPA',institutes:['IIT Kanpur','IIT Madras','IIIT Bangalore']},
+      {id:'mlops',name:'MLOps & Production AI',tagline:'Get models from notebook to global scale',desc:'CI/CD for machine learning, model monitoring, feature stores, and scalable inference. Bridge the gap between research and production.',diff:3.8,tools:['MLflow','Kubeflow','Docker','FastAPI'],outcome:'MLOps Engineer · Platform Engineer',salary:'₹14–35 LPA',institutes:['IIT Bombay','IIT Delhi','BITS Pilani']},
+      {id:'data_eng',name:'Data Engineering',tagline:'Build the pipelines that power AI at scale',desc:'Reliable data lakes, warehouses, and streaming pipelines. Without this, no ML system survives production.',diff:3.5,tools:['Apache Spark','dbt','Airflow','Snowflake'],outcome:'Data Engineer · Analytics Engineer',salary:'₹12–30 LPA',institutes:['IIT Madras','NIT Trichy','VIT Vellore']}
+    ],
+    emerging:[
+      {id:'genai',name:'Generative AI & Foundation Models',tagline:'The frontier — LLMs, diffusion models, multimodal AI',desc:'Training and fine-tuning LLMs and image generators. RLHF, constitutional AI, and inference optimization at scale.',diff:5.0,tools:['GPT-4 API','Llama','Stable Diffusion','RLHF'],outcome:'GenAI Engineer · AI Researcher',salary:'₹25–80 LPA',institutes:['IISc','IIT Bombay','Stanford (abroad)']},
+      {id:'rl',name:'Reinforcement Learning',tagline:'Agents that learn from rewards — games to robotics',desc:'Train intelligent agents using Markov decision processes, policy gradients, and model-based methods. AlphaGo and ChatGPT both use RL.',diff:4.8,tools:['Gymnasium','RLlib','PyTorch','MuJoCo'],outcome:'RL Research Scientist · Robotics AI Engineer',salary:'₹22–60 LPA',institutes:['IISc','IIT Kanpur','DeepMind (abroad)']},
+      {id:'genai',name:'Federated & Privacy-Preserving ML',tagline:'Train without centralizing sensitive data',desc:'PySyft, TF Federated, and differential privacy. Critical for healthcare AI and financial models where data cannot leave silos.',diff:4.3,tools:['PySyft','TF Federated','Flower'],outcome:'Privacy ML Engineer · Healthcare AI Specialist',salary:'₹18–45 LPA',institutes:['IIT Delhi','TIFR','MIT (abroad)']},
+      {id:'ai_safety',name:'AI Safety & Ethics Engineering',tagline:'Build AI that stays aligned with human values',desc:'Interpretability, red-teaming, and governance frameworks. One of the fastest-growing areas as governments regulate AI.',diff:3.9,tools:['SHAP','LIME','Constitutional AI'],outcome:'AI Safety Researcher · Policy Technologist',salary:'₹20–50 LPA',institutes:['IISc','IIIT-H','Oxford (abroad)']},
+      {id:'quantum_ml',name:'Quantum Machine Learning',tagline:'Variational circuits and hybrid quantum algorithms',desc:'Combine quantum computing with ML for exponential speedup on optimization problems. High risk, very high reward.',diff:5.0,tools:['Qiskit','PennyLane','Cirq'],outcome:'Quantum ML Researcher · Deep Tech Founder',salary:'₹30–100 LPA',institutes:['IIT Kanpur','IIT Madras','Caltech (abroad)']}
+    ]
+  },
+  cse:{
+    established:[
+      {id:'systems',name:'Systems Programming & OS',tagline:'Build OSes, compilers, and runtimes from scratch',desc:'The deepest layer of software engineering. Covers memory management, concurrency, and kernel development.',diff:4.8,tools:['C','Rust','Linux Kernel','Assembly'],outcome:'Systems Engineer · Compiler Engineer',salary:'₹16–50 LPA',institutes:['IIT Bombay','IIT Delhi','IISc']},
+      {id:'distributed',name:'Distributed Systems & Cloud',tagline:'Fault-tolerant systems at global scale',desc:'Consensus protocols, CAP theorem, microservices, and cloud-native architecture. Every major tech company needs this.',diff:4.5,tools:['Go','Kafka','Redis','AWS/GCP'],outcome:'Backend Engineer · SRE',salary:'₹18–55 LPA',institutes:['IIT Delhi','BITS Pilani','IIIT Hyderabad']},
+      {id:'algos',name:'Algorithms & Competitive Programming',tagline:'Master DS&A — the FAANG interview foundation',desc:'Advanced data structures, dynamic programming, and graph algorithms. The strongest signal in technical interviews.',diff:4.6,tools:['C++','Python','LeetCode','Codeforces'],outcome:'SWE at FAANG · Algorithm Researcher',salary:'₹20–80 LPA',institutes:['IIT Bombay','IIT Madras','IIT Kanpur']},
+      {id:'databases',name:'Database Systems & Storage Engines',tagline:'Build and optimize databases end to end',desc:'Query planners, ACID transactions, storage engines, and indexing strategies — the unsexy but mission-critical layer.',diff:4.3,tools:['PostgreSQL','RocksDB','ClickHouse'],outcome:'Database Engineer · Storage Engineer',salary:'₹15–45 LPA',institutes:['IIT Delhi','NIT Trichy','VIT Vellore']},
+      {id:'networks',name:'Computer Networks & Security',tagline:'TCP/IP, CDNs, and network security engineering',desc:'Protocol design, firewall engineering, VPNs, and network monitoring. Everything that keeps the internet running.',diff:4.0,tools:['Wireshark','NGINX','iptables'],outcome:'Network Engineer · Security Engineer',salary:'₹14–40 LPA',institutes:['IIT Kharagpur','NIT Trichy','SRM']},
+      {id:'fullstack',name:'Full-Stack Web Engineering',tagline:'End-to-end web from pixel to database',desc:'Frontend, backend, APIs, and deployment pipelines. The fastest path to shipping products and freelancing.',diff:3.5,tools:['React','Node.js','PostgreSQL','Docker'],outcome:'Full-Stack Engineer · Tech Lead',salary:'₹10–35 LPA',institutes:['VIT Vellore','Manipal','SRM']}
+    ],
+    emerging:[
+      {id:'blockchain',name:'Blockchain & Web3 Engineering',tagline:'Smart contracts, DeFi, and decentralized apps',desc:'Ethereum, Layer 2 scaling, and decentralized finance. High volatility in jobs, but high upside for early movers.',diff:4.4,tools:['Solidity','Ethereum','Rust','Hardhat'],outcome:'Blockchain Developer · Protocol Engineer',salary:'₹15–60 LPA',institutes:['IIT Bombay','BITS Pilani','IIT Delhi']},
+      {id:'edge',name:'Edge Computing & IoT Networks',tagline:'Deploy intelligence at the network edge',desc:'5G edge compute, IoT pipelines, and latency-critical systems for smart cities and industrial automation.',diff:4.1,tools:['CUDA','TensorRT','AWS Greengrass'],outcome:'Edge AI Engineer · IoT Architect',salary:'₹14–40 LPA',institutes:['IIT Kanpur','NIT Trichy','IIT Roorkee']},
+      {id:'wasm',name:'WebAssembly & Serverless Runtimes',tagline:'Next-gen compute substrates at near-native speed',desc:'Portable, sandboxed, near-native performance runtimes for web and cloud. Rust-first, future-forward.',diff:4.2,tools:['Rust','WASM','Cloudflare Workers'],outcome:'Runtime Engineer · Platform Engineer',salary:'₹18–50 LPA',institutes:['IIT Bombay','IIIT-H','CMU (abroad)']}
+    ]
+  }
+};
+
+const DEFAULT_SPECS={
+  established:[
+    {id:'core_found',name:'Core Engineering Fundamentals',tagline:'Foundational mastery before specializing',desc:'Subject-area foundations — the prerequisite for all advanced specializations in your branch.',diff:3.5,tools:['MATLAB','AutoCAD','Lab Tools'],outcome:'Graduate Engineer · Core Industry',salary:'₹8–18 LPA',institutes:['NIT Trichy','VIT Vellore','SPPU']},
+    {id:'simulation',name:'Simulation & Computational Methods',tagline:'FEA, CFD, and numerical methods',desc:'Analyze complex physical systems digitally before building them. Critical in aerospace, mech, and civil.',diff:4.0,tools:['ANSYS','COMSOL','MATLAB'],outcome:'Simulation Engineer · R&D Engineer',salary:'₹10–28 LPA',institutes:['IIT Kharagpur','IIT Kanpur','NIT Trichy']},
+    {id:'project_mgmt',name:'Project & Operations Management',tagline:'Lead large-scale engineering delivery',desc:'Engineering management, supply chain optimization, and operations research for complex infrastructure projects.',diff:3.2,tools:['MS Project','Lean/Six Sigma','ERP'],outcome:'Project Manager · Operations Lead',salary:'₹12–30 LPA',institutes:['IIT Delhi','NIT Trichy','SPPU']},
+    {id:'instrumentation',name:'Instrumentation & Control Systems',tagline:'Sensors, PLCs, and industrial automation',desc:'Design closed-loop control systems for factories, power plants, and autonomous vehicles.',diff:3.8,tools:['PLC','LabVIEW','SCADA'],outcome:'Control Engineer · Automation Engineer',salary:'₹10–25 LPA',institutes:['IIT Kharagpur','NIT Warangal','IIT Roorkee']}
+  ],
+  emerging:[
+    {id:'iot',name:'Internet of Things (IoT)',tagline:'Connect devices — sensors to cloud',desc:'Build smart systems that sense, compute, and act. Powers smart cities, agriculture, and healthcare.',diff:3.7,tools:['Arduino','MQTT','AWS IoT','Raspberry Pi'],outcome:'IoT Engineer · Smart Systems Architect',salary:'₹10–28 LPA',institutes:['IIT Kanpur','NIT Trichy','VIT Vellore']},
+    {id:'sustainability',name:'Sustainable Engineering & Green Tech',tagline:'Build for the planet, not just profit',desc:'Renewable energy systems, carbon capture engineering, and circular economy solutions.',diff:3.5,tools:['SAP EHS','GIS','MATLAB'],outcome:'Sustainability Engineer · ESG Consultant',salary:'₹10–22 LPA',institutes:['IIT Delhi','NIT Trichy','Amrita']},
+    {id:'digital_twin',name:'Digital Twins & Industry 4.0',tagline:'Virtual replicas for predictive maintenance',desc:'Build digital counterparts of physical assets for real-time monitoring, simulation, and optimization.',diff:4.2,tools:['Siemens NX','ANSYS Twin Builder'],outcome:'Digital Twin Engineer · Smart Factory Lead',salary:'₹14–35 LPA',institutes:['IIT Bombay','IIT Kanpur','Bosch (industrial)']}
+  ]
+};
+
+const state=loadState();
+const branchId=state.selectedBranch||'aiml';
+let selectedSpec=state.selectedCourse||null;
+let currentTab='established';
+let expandedId=null;
+
+const BRANCH_NAMES={aiml:'AI & Machine Learning',cse:'Computer Science',ece:'Electronics & Communication',data_science:'Data Science',cybersec:'Cybersecurity',robotics:'Robotics',mech:'Mechanical Eng.',civil:'Civil Eng.',eee:'Electrical & Electronics',aerospace:'Aerospace',biotech:'Biotechnology',chemical:'Chemical Eng.'};
+const BRANCH_ICONS={aiml:'🧠',cse:'💻',ece:'📡',data_science:'📊',cybersec:'🔒',robotics:'🤖',mech:'⚙️',civil:'🏗️',eee:'⚡',aerospace:'🚀',biotech:'🧬',chemical:'⚗️'};
+
+document.getElementById('branchTitle').textContent=BRANCH_NAMES[branchId]||branchId;
+document.getElementById('branchIcon').textContent=BRANCH_ICONS[branchId]||'🎯';
+document.getElementById('branchIcon').style.background='var(--blue-dim)';
+
+const specs=ALL_SPECS[branchId]||DEFAULT_SPECS;
+
+function diffLabel(d){return d>=4.5?'Expert':d>=4?'Advanced':d>=3.5?'Challenging':'Moderate';}
+function diffColor(d){return d>=4.5?'var(--red)':d>=4?'var(--amber)':d>=3.5?'var(--blue)':'var(--green)';}
+function stars(d){const r=Math.round(d);return'★'.repeat(r)+'☆'.repeat(5-r);}
+
+document.getElementById('statsStrip').innerHTML=(()=>{
+  const est=specs.established.length,emer=specs.emerging.length;
+  return `<div><span style="font-size:18px;font-weight:800;color:var(--blue)">${est+emer}</span><span style="font-size:12px;color:var(--muted);margin-left:6px">total specs</span></div>
+  <div><span style="font-size:18px;font-weight:800;color:var(--navy)">${est}</span><span style="font-size:12px;color:var(--muted);margin-left:6px">established</span></div>
+  <div><span style="font-size:18px;font-weight:800;color:var(--purple)">${emer}</span><span style="font-size:12px;color:var(--muted);margin-left:6px">emerging</span></div>`;
+})();
+
+function toggleExpand(id){
+  expandedId = expandedId===id ? null : id;
+  renderSpecs();
+}
+
+function renderSpecs(){
+  const list=specs[currentTab]||[];
+  const isEmer=currentTab==='emerging';
+  const accent=isEmer?'var(--purple)':'var(--blue)';
+  document.getElementById('specsGrid').innerHTML=list.map(s=>{
+    const isSel=selectedSpec===s.id;
+    const isExp=expandedId===s.id;
+    let cardClass='spec-card';
+    if(isSel) cardClass+=' selected-card';
+    else if(isExp) cardClass+=' expanded-card';
+    const dc=diffColor(s.diff);
+    return `<div class="${cardClass}" id="card-${s.id}">
+      ${isSel?`<div class="sel-pill">✓ SELECTED</div>`:''}
+      ${isEmer&&!isSel?`<div class="emg-pill">🌱 EMERGING</div>`:''}
+      <div class="spec-header" onclick="toggleExpand('${s.id}')" style="margin-top:${(isSel||isEmer)?'12px':'0'}">
+        <div style="flex:1;">
+          <div class="spec-name">${s.name}</div>
+          <div class="spec-tagline">${s.tagline}</div>
+        </div>
+        <div class="spec-header-right">
+          <div style="font-size:11px;font-weight:700;color:${dc};">${stars(s.diff)} <span style="color:${dc};font-size:10px;">${diffLabel(s.diff)}</span></div>
+          <div class="expand-icon">${isExp?'▲':'▼'}</div>
+        </div>
+      </div>
+      <div class="spec-body">
+        <p style="font-size:13px;color:var(--slate);line-height:1.65;margin:12px 0;">${s.desc}</p>
+        <div class="spec-detail-grid">
+          <div class="spec-detail-box">
+            <div class="spec-detail-label">Salary Range</div>
+            <div class="spec-detail-val" style="color:var(--green)">${s.salary}</div>
+            <div class="spec-detail-sub">Starting · Senior</div>
+          </div>
+          <div class="spec-detail-box">
+            <div class="spec-detail-label">Career Outcomes</div>
+            <div class="spec-detail-val">${s.outcome.split('·')[0].trim()}</div>
+            <div class="spec-detail-sub">${s.outcome.split('·')[1]?.trim()||''}</div>
+          </div>
+        </div>
+        <div class="spec-detail-box" style="margin-bottom:12px;">
+          <div class="spec-detail-label">Top Institutes Offering This</div>
+          <div style="font-size:13px;color:var(--navy);font-weight:600;margin-top:4px;">${s.institutes.join(' · ')}</div>
+        </div>
+        <div class="spec-detail-label" style="margin-bottom:6px;">Key Tools & Technologies</div>
+        <div class="tools-row">
+          ${s.tools.map(t=>`<span class="tool-chip" style="background:${accent}12;color:${accent};border:1px solid ${accent}28;">${t}</span>`).join('')}
+        </div>
+        <button class="select-btn ${isSel?'chosen':''}" onclick="pickSpec('${s.id}','${s.name.replace(/'/g,"\\'")}')">
+          ${isSel?'✓ Selected — Change to another track':'Select This Specialization'}
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function pickSpec(id,name){
+  selectedSpec=id;
+  saveState({selectedCourse:id});
+  document.getElementById('ctaLabel').textContent=name;
+  document.getElementById('stickyCta').style.display='flex';
+  renderSpecs();
+  // Scroll CTA into view
+  document.getElementById('stickyCta').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function setTab(tab){
+  currentTab=tab;
+  expandedId=null;
+  document.getElementById('tabEst').classList.toggle('active',tab==='established');
+  document.getElementById('tabEmer').classList.toggle('active',tab==='emerging');
+  renderSpecs();
+}
+
+renderSpecs();
+if(selectedSpec){
+  const all=[...specs.established,...specs.emerging];
+  const f=all.find(s=>s.id===selectedSpec);
+  if(f){document.getElementById('ctaLabel').textContent=f.name;document.getElementById('stickyCta').style.display='flex';}
+}
+</script>
+</body>
+</html>

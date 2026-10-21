@@ -1,0 +1,37 @@
+{
+  "specializations": {
+    "aiml": {
+      "established": [
+        { "id": "ml_foundations", "name": "Machine Learning Foundations", "description": "Classical ML algorithms: regression, SVM, random forests, gradient boosting. The bedrock every practitioner must master.", "duration": "48 months", "difficulty": 4.0, "tools": ["Python", "scikit-learn", "NumPy", "Pandas"], "outcome": "ML Engineer, Data Scientist" },
+        { "id": "deep_learning", "name": "Deep Learning & Neural Networks", "description": "CNNs, RNNs, Transformers, and optimization. Build models that see, hear, and reason.", "duration": "48 months", "difficulty": 4.5, "tools": ["PyTorch", "TensorFlow", "CUDA", "JAX"], "outcome": "Deep Learning Engineer, AI Researcher" },
+        { "id": "nlp", "name": "Natural Language Processing", "description": "LLMs, embeddings, RAG pipelines, and fine-tuning. The field behind ChatGPT and Gemini.", "duration": "48 months", "difficulty": 4.5, "tools": ["HuggingFace", "LangChain", "spaCy", "BERT"], "outcome": "NLP Engineer, AI Product Engineer" },
+        { "id": "computer_vision", "name": "Computer Vision", "description": "Object detection, segmentation, 3D reconstruction, and video analysis. Teach machines to see.", "duration": "48 months", "difficulty": 4.2, "tools": ["OpenCV", "YOLO", "PyTorch", "MediaPipe"], "outcome": "Computer Vision Engineer, AR/VR Engineer" },
+        { "id": "mlops", "name": "MLOps & Production AI", "description": "Model deployment, monitoring, CI/CD for ML, feature stores, and scalable inference pipelines.", "duration": "48 months", "difficulty": 3.8, "tools": ["MLflow", "Kubeflow", "Docker", "Kubernetes", "FastAPI"], "outcome": "MLOps Engineer, Platform Engineer" },
+        { "id": "data_engineering", "name": "Data Engineering", "description": "Build reliable data pipelines, warehouses, and lakehouses that power ML at scale.", "duration": "48 months", "difficulty": 3.5, "tools": ["Apache Spark", "dbt", "Airflow", "Snowflake", "Kafka"], "outcome": "Data Engineer, Analytics Engineer" }
+      ],
+      "emerging": [
+        { "id": "genai", "name": "Generative AI & Foundation Models", "description": "Training and fine-tuning LLMs, diffusion models, multimodal systems — the frontier of AI.", "duration": "48 months", "difficulty": 5.0, "tools": ["GPT-4 API", "Llama", "Stable Diffusion", "RLHF"], "outcome": "GenAI Engineer, AI Researcher" },
+        { "id": "rl", "name": "Reinforcement Learning", "description": "Train agents that learn from rewards — from game-playing AIs to real-world robotics control.", "duration": "48 months", "difficulty": 4.8, "tools": ["Gymnasium", "RLlib", "PyTorch", "MuJoCo"], "outcome": "RL Research Scientist, Robotics AI Engineer" },
+        { "id": "federated", "name": "Federated & Privacy-Preserving ML", "description": "Train models without centralizing data. Critical for healthcare, finance, and government AI.", "duration": "48 months", "difficulty": 4.3, "tools": ["PySyft", "TensorFlow Federated", "Flower"], "outcome": "Privacy ML Engineer, Healthcare AI Specialist" },
+        { "id": "ai_ethics", "name": "AI Safety & Ethics Engineering", "description": "Alignment, interpretability, red-teaming, and governance frameworks for responsible AI deployment.", "duration": "48 months", "difficulty": 3.9, "tools": ["SHAP", "LIME", "Anthropic API", "Constitutional AI"], "outcome": "AI Safety Researcher, Policy Technologist" },
+        { "id": "neuro_ai", "name": "Neuromorphic Computing & Brain-Inspired AI", "description": "Spiking neural networks and biologically-inspired computing for ultra-efficient edge AI.", "duration": "48 months", "difficulty": 4.7, "tools": ["Intel Loihi", "Brian2", "NEST", "SpiNNaker"], "outcome": "Research Scientist, Edge AI Specialist" },
+        { "id": "quantum_ml", "name": "Quantum Machine Learning", "description": "Apply quantum computing to ML — variational quantum circuits, quantum kernels, and hybrid algorithms.", "duration": "48 months", "difficulty": 5.0, "tools": ["Qiskit", "PennyLane", "Cirq", "IBM Quantum"], "outcome": "Quantum ML Researcher, Deep Tech Founder" }
+      ]
+    },
+    "cse": {
+      "established": [
+        { "id": "systems", "name": "Systems Programming & OS", "description": "Build operating systems, compilers, and runtimes. The deepest layer of software engineering.", "duration": "48 months", "difficulty": 4.8, "tools": ["C", "Rust", "Linux Kernel", "Assembly"], "outcome": "Systems Engineer, Compiler Engineer" },
+        { "id": "distributed", "name": "Distributed Systems & Cloud", "description": "Design fault-tolerant systems at global scale. Consensus protocols, CAP theorem, microservices.", "duration": "48 months", "difficulty": 4.5, "tools": ["Go", "Kafka", "Redis", "AWS/GCP", "gRPC"], "outcome": "Backend Engineer, Site Reliability Engineer" },
+        { "id": "algorithms", "name": "Algorithms & Competitive Programming", "description": "Master advanced data structures and algorithmic paradigms — the FAANG interview foundation.", "duration": "48 months", "difficulty": 4.6, "tools": ["C++", "Python", "LeetCode", "Codeforces"], "outcome": "SWE at FAANG, Algorithm Researcher" },
+        { "id": "databases", "name": "Database Systems & Storage Engines", "description": "Build and optimize databases — query planners, storage engines, indexing, and ACID transactions.", "duration": "48 months", "difficulty": 4.3, "tools": ["PostgreSQL", "RocksDB", "ClickHouse", "SQL"], "outcome": "Database Engineer, Storage Engineer" },
+        { "id": "networks", "name": "Computer Networks & Security", "description": "TCP/IP stack, DNS, CDNs, firewall engineering, and network protocol design.", "duration": "48 months", "difficulty": 4.0, "tools": ["Wireshark", "NGINX", "iptables", "Python"], "outcome": "Network Engineer, Security Engineer" },
+        { "id": "web_fullstack", "name": "Full-Stack Web Engineering", "description": "End-to-end web development — frontend, backend, APIs, databases, and deployment pipelines.", "duration": "48 months", "difficulty": 3.5, "tools": ["React", "Node.js", "PostgreSQL", "Docker", "TypeScript"], "outcome": "Full-Stack Engineer, Tech Lead" }
+      ],
+      "emerging": [
+        { "id": "blockchain", "name": "Blockchain & Web3 Engineering", "description": "Smart contracts, DeFi protocols, Layer 2 scaling, and decentralized application architecture.", "duration": "48 months", "difficulty": 4.4, "tools": ["Solidity", "Ethereum", "Rust/Solana", "Hardhat"], "outcome": "Blockchain Developer, Protocol Engineer" },
+        { "id": "edge_computing", "name": "Edge Computing & Fog Networks", "description": "Deploy intelligence at the network edge — IoT pipelines, 5G multi-access edge compute, and latency-critical systems.", "duration": "48 months", "difficulty": 4.1, "tools": ["CUDA", "TensorRT", "AWS Greengrass", "WebAssembly"], "outcome": "Edge AI Engineer, IoT Architect" },
+        { "id": "wasm", "name": "WebAssembly & Serverless Runtimes", "description": "Next-gen compute substrates — portable, sandboxed, near-native performance for any workload.", "duration": "48 months", "difficulty": 4.2, "tools": ["Rust", "WASM", "Cloudflare Workers", "Wasmer"], "outcome": "Runtime Engineer, Platform Engineer" }
+      ]
+    }
+  }
+}

@@ -1,0 +1,244 @@
+{
+  "branches": [
+    {
+      "id": "aiml",
+      "name": "AI & Machine Learning",
+      "shortName": "AI/ML",
+      "icon": "🧠",
+      "type": "emerging",
+      "color": "#06b6d4",
+      "description": "Build intelligent systems that learn, reason, and adapt. From deep learning to generative AI.",
+      "avgPackage": "18-45 LPA",
+      "demandScore": 98,
+      "traitFit": ["ABS", "MTH", "BLD"],
+      "keySkills": ["Python", "PyTorch", "Statistics", "Linear Algebra", "Transformers"],
+      "topColleges": ["IIT Bombay", "IIT Delhi", "IIIT Hyderabad"],
+      "careerPaths": ["ML Engineer", "AI Researcher", "Data Scientist", "MLOps Engineer"],
+      "fitReasons": {
+        "high_ABS": "Requires strong abstract mathematical thinking for model architecture.",
+        "high_MTH": "Core calculus, probability, and linear algebra are foundational.",
+        "high_BLD": "You'll build and ship production ML pipelines."
+      }
+    },
+    {
+      "id": "cse",
+      "name": "Computer Science & Engineering",
+      "shortName": "CSE",
+      "icon": "💻",
+      "type": "classic",
+      "color": "#7c3aed",
+      "description": "The bedrock of tech — algorithms, systems, OS, networks, and software engineering at scale.",
+      "avgPackage": "12-40 LPA",
+      "demandScore": 95,
+      "traitFit": ["SYS", "ABS", "STM"],
+      "keySkills": ["DSA", "System Design", "C++", "Java", "Operating Systems"],
+      "topColleges": ["IIT Madras", "IIT Kanpur", "NIT Trichy"],
+      "careerPaths": ["Software Engineer", "Backend Engineer", "Systems Architect", "DevOps"],
+      "fitReasons": {
+        "high_SYS": "Systems thinking is the heart of CS.",
+        "high_ABS": "Abstract problem solving defines top CS engineers.",
+        "high_STM": "CS depth requires sustained academic commitment."
+      }
+    },
+    {
+      "id": "ece",
+      "name": "Electronics & Communication Engg.",
+      "shortName": "ECE",
+      "icon": "📡",
+      "type": "classic",
+      "color": "#06b6d4",
+      "description": "Bridging hardware and software — from microcontrollers to 5G networks and embedded systems.",
+      "avgPackage": "8-28 LPA",
+      "demandScore": 82,
+      "traitFit": ["HW", "SYS", "MTH"],
+      "keySkills": ["VLSI", "Embedded C", "Signal Processing", "MATLAB", "PCB Design"],
+      "topColleges": ["IIT Kharagpur", "NIT Surathkal", "BITS Pilani"],
+      "careerPaths": ["VLSI Engineer", "Embedded Systems", "RF Engineer", "Telecom Analyst"],
+      "fitReasons": {
+        "high_HW": "Hands-on hardware design is central to ECE.",
+        "high_SYS": "Systems thinking applies to circuit and network design.",
+        "high_MTH": "Signal processing relies heavily on Fourier and complex analysis."
+      }
+    },
+    {
+      "id": "data_science",
+      "name": "Data Science & Analytics",
+      "shortName": "DS&A",
+      "icon": "📊",
+      "type": "emerging",
+      "color": "#22c55e",
+      "description": "Translate raw data into business decisions using statistical modeling, visualization, and ML.",
+      "avgPackage": "10-30 LPA",
+      "demandScore": 90,
+      "traitFit": ["MTH", "ABS", "FIN"],
+      "keySkills": ["Python", "SQL", "Power BI", "Statistics", "Machine Learning"],
+      "topColleges": ["IIT Bombay", "ISI Kolkata", "IIIT Bangalore"],
+      "careerPaths": ["Data Analyst", "Business Intelligence", "Data Engineer", "Quant Analyst"],
+      "fitReasons": {
+        "high_MTH": "Statistical foundations power all data science work.",
+        "high_ABS": "Pattern recognition from abstract data is the core skill.",
+        "high_FIN": "Data science offers stable roles at banks and consultancies."
+      }
+    },
+    {
+      "id": "cybersec",
+      "name": "Cybersecurity",
+      "shortName": "CyberSec",
+      "icon": "🔒",
+      "type": "emerging",
+      "color": "#7c3aed",
+      "description": "Defend systems from adversaries. Ethical hacking, cryptography, threat intelligence, and digital forensics.",
+      "avgPackage": "10-35 LPA",
+      "demandScore": 88,
+      "traitFit": ["RSK", "SYS", "AMB"],
+      "keySkills": ["Penetration Testing", "Network Security", "Cryptography", "SIEM", "Python"],
+      "topColleges": ["IIT Kanpur", "NIT Tiruchirappalli", "IIIT Allahabad"],
+      "careerPaths": ["Security Analyst", "Penetration Tester", "SOC Engineer", "CISO"],
+      "fitReasons": {
+        "high_RSK": "Security work involves calculated risk and adversarial thinking.",
+        "high_SYS": "You need to understand entire system architectures to break or defend them.",
+        "high_AMB": "Threats evolve constantly — adaptability is a survival skill."
+      }
+    },
+    {
+      "id": "robotics",
+      "name": "Robotics & Automation",
+      "shortName": "Robotics",
+      "icon": "🤖",
+      "type": "emerging",
+      "color": "#f59e0b",
+      "description": "Design autonomous machines — from industrial arms to space rovers. Mechatronics meets AI.",
+      "avgPackage": "10-32 LPA",
+      "demandScore": 85,
+      "traitFit": ["HW", "BLD", "SYS"],
+      "keySkills": ["ROS", "Computer Vision", "Control Systems", "C++", "CAD"],
+      "topColleges": ["IIT Bombay", "IIT Delhi", "IISC Bangalore"],
+      "careerPaths": ["Robotics Engineer", "Automation Specialist", "Controls Engineer", "Research Scientist"],
+      "fitReasons": {
+        "high_HW": "Physical systems design is at the core of robotics.",
+        "high_BLD": "You ship real, tangible products that move and act.",
+        "high_SYS": "Integrating hardware, software, and sensors demands systems thinking."
+      }
+    },
+    {
+      "id": "mech",
+      "name": "Mechanical Engineering",
+      "shortName": "Mech",
+      "icon": "⚙️",
+      "type": "classic",
+      "color": "#f59e0b",
+      "description": "Design, analyze, and manufacture mechanical systems — from automotive to aerospace and energy.",
+      "avgPackage": "6-20 LPA",
+      "demandScore": 72,
+      "traitFit": ["HW", "STM", "SYS"],
+      "keySkills": ["AutoCAD", "SolidWorks", "Thermodynamics", "Finite Element Analysis", "Manufacturing"],
+      "topColleges": ["IIT Kharagpur", "IIT Delhi", "NIT Warangal"],
+      "careerPaths": ["Design Engineer", "Manufacturing Engineer", "ISRO Scientist", "Automotive R&D"],
+      "fitReasons": {
+        "high_HW": "Physical design and fabrication are the foundation.",
+        "high_STM": "Core subjects require sustained academic rigor.",
+        "high_SYS": "Systems integration from component to machine level."
+      }
+    },
+    {
+      "id": "civil",
+      "name": "Civil Engineering",
+      "shortName": "Civil",
+      "icon": "🏗️",
+      "type": "classic",
+      "color": "#84cc16",
+      "description": "Build the infrastructure of civilization — bridges, dams, smart cities, and structural systems.",
+      "avgPackage": "5-18 LPA",
+      "demandScore": 65,
+      "traitFit": ["SYS", "STM", "FIN"],
+      "keySkills": ["AutoCAD", "Structural Analysis", "Surveying", "STAAD Pro", "Project Management"],
+      "topColleges": ["IIT Roorkee", "IIT Madras", "NIT Calicut"],
+      "careerPaths": ["Structural Engineer", "Urban Planner", "Govt. PWD Officer", "Construction PM"],
+      "fitReasons": {
+        "high_SYS": "Large-scale civil projects demand rigorous systems planning.",
+        "high_STM": "Long project timelines reward perseverance.",
+        "high_FIN": "Govt. sector roles offer security and stable income."
+      }
+    },
+    {
+      "id": "chemical",
+      "name": "Chemical Engineering",
+      "shortName": "ChemE",
+      "icon": "⚗️",
+      "type": "classic",
+      "color": "#f97316",
+      "description": "Scale chemistry from lab to industry — oil refineries, pharmaceuticals, polymers, and green energy.",
+      "avgPackage": "7-22 LPA",
+      "demandScore": 68,
+      "traitFit": ["MTH", "SYS", "STM"],
+      "keySkills": ["Process Simulation", "Thermodynamics", "Reaction Engineering", "MATLAB", "Safety"],
+      "topColleges": ["IIT Bombay", "IIT Madras", "IIT Delhi"],
+      "careerPaths": ["Process Engineer", "R&D Chemist", "PSU Officer (ONGC/BPCL)", "Pharma R&D"],
+      "fitReasons": {
+        "high_MTH": "Chemical process equations demand strong mathematical modeling.",
+        "high_SYS": "Industrial process design is a system-of-systems challenge.",
+        "high_STM": "Chemical engineering is academically demanding."
+      }
+    },
+    {
+      "id": "biotech",
+      "name": "Biotechnology & Bioinformatics",
+      "shortName": "Biotech",
+      "icon": "🧬",
+      "type": "emerging",
+      "color": "#ec4899",
+      "description": "Merge biology with engineering — gene editing, drug discovery, bioinformatics pipelines, and synthetic biology.",
+      "avgPackage": "6-24 LPA",
+      "demandScore": 78,
+      "traitFit": ["ABS", "MTH", "CRE"],
+      "keySkills": ["Python", "Genomics", "Lab Techniques", "Statistics", "CRISPR"],
+      "topColleges": ["IIT Delhi", "IISC Bangalore", "NIT Warangal"],
+      "careerPaths": ["Bioinformatics Analyst", "Pharma R&D", "Clinical Researcher", "Biotech Startup"],
+      "fitReasons": {
+        "high_ABS": "Computational biology requires modeling complex biological systems.",
+        "high_MTH": "Bioinformatics relies on statistical genomics and algorithms.",
+        "high_CRE": "Designing novel therapeutics blends creativity with rigor."
+      }
+    },
+    {
+      "id": "eee",
+      "name": "Electrical & Electronics Engg.",
+      "shortName": "EEE",
+      "icon": "⚡",
+      "type": "classic",
+      "color": "#eab308",
+      "description": "Power systems, electric vehicles, smart grids, and control systems — the energy backbone of the future.",
+      "avgPackage": "7-25 LPA",
+      "demandScore": 76,
+      "traitFit": ["HW", "MTH", "SYS"],
+      "keySkills": ["Power Systems", "Control Theory", "MATLAB/Simulink", "PLC", "EV Tech"],
+      "topColleges": ["IIT Kanpur", "IIT Roorkee", "NIT Trichy"],
+      "careerPaths": ["Power Engineer", "EV Systems Engineer", "Grid Analyst", "PSU (NTPC/BHEL)"],
+      "fitReasons": {
+        "high_HW": "Electrical systems are physical — you'll work with real power infrastructure.",
+        "high_MTH": "Circuit theory, Fourier transforms, and control theory are heavy math.",
+        "high_SYS": "Power grids and EV systems demand end-to-end systems thinking."
+      }
+    },
+    {
+      "id": "aerospace",
+      "name": "Aerospace Engineering",
+      "shortName": "Aero",
+      "icon": "🚀",
+      "type": "emerging",
+      "color": "#06b6d4",
+      "description": "Design aircraft, spacecraft, and propulsion systems. ISRO, DRDO, and the private space race await.",
+      "avgPackage": "8-28 LPA",
+      "demandScore": 80,
+      "traitFit": ["MTH", "HW", "RSK"],
+      "keySkills": ["Fluid Mechanics", "Propulsion", "CFD", "MATLAB", "Structural Analysis"],
+      "topColleges": ["IIT Bombay", "IIT Kanpur", "IISc Bangalore"],
+      "careerPaths": ["ISRO Scientist", "Aeronautical Engineer", "Defense R&D", "Private Space Startups"],
+      "fitReasons": {
+        "high_MTH": "Aerodynamics, orbital mechanics, and propulsion are deeply mathematical.",
+        "high_HW": "You'll design physical flight systems.",
+        "high_RSK": "The field involves high-stakes, calculated engineering decisions."
+      }
+    }
+  ]
+}

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Stage 5.5 — M.Tech Path | Career Quest</title>
+<link rel="stylesheet" href="intro.css"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  .route-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:32px;}
+  .route-card{padding:18px;}
+  .route-icon{font-size:28px;margin-bottom:8px;}
+  .route-name{font-size:14px;font-weight:700;margin-bottom:6px;}
+  .route-desc{font-size:12px;color:var(--muted);line-height:1.5;margin:0;}
+  .chart-wrap{padding:24px;margin-bottom:32px;}
+  .chart-title{font-size:13px;font-weight:700;color:var(--subtle);margin-bottom:20px;letter-spacing:.06em;}
+  .spec-card{padding:18px;}
+  .spec-name{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:6px;}
+  .spec-desc{font-size:12px;color:var(--subtle);line-height:1.5;margin-bottom:10px;}
+  .tag-chip{font-size:10px;padding:2px 8px;border-radius:12px;}
+  .inst-line{font-size:11px;color:var(--muted);}
+  @media(max-width:700px){.route-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<nav class="stage-nav">
+  <div class="stage-nav-inner">
+    <a href="index.html" class="stage-logo">⚔ Career<span style="color:var(--blue)">Quest</span></a>
+    <div class="stage-steps" id="stageSteps"></div>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <div style="margin-bottom:32px;">
+    <div style="font-size:13px;color:#7c3aed;font-weight:700;letter-spacing:.1em;margin-bottom:6px;">STAGE 5.5 · M.TECH PATH</div>
+    <h2 style="font-size:30px;font-weight:800;margin:0 0 8px;background:linear-gradient(135deg,var(--navy),#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">M.Tech & Advanced Research</h2>
+    <p style="color:var(--muted);font-size:14px;">You selected a 6-year horizon. This page maps your post-B.Tech advanced specialization options.</p>
+  </div>
+
+  <!-- Route selector -->
+  <div class="route-grid">
+    <div class="glass route-card" style="border:1px solid rgba(6,182,212,.2);">
+      <div class="route-icon">📝</div>
+      <div class="route-name" style="color:var(--blue);">GATE Route</div>
+      <p class="route-desc">Write GATE → M.Tech/MS at IITs/NITs. JRF stipend ₹35,000–₹58,000/mo available.</p>
+    </div>
+    <div class="glass route-card" style="border:1px solid rgba(124,58,237,.2);">
+      <div class="route-icon">🌏</div>
+      <div class="route-name" style="color:#7c3aed;">GRE Route</div>
+      <p class="route-desc">GRE + TOEFL → MS abroad (USA, Germany, Canada). Higher investment, global exposure and network.</p>
+    </div>
+    <div class="glass route-card" style="border:1px solid rgba(34,197,94,.2);">
+      <div class="route-icon">🔬</div>
+      <div class="route-name" style="color:var(--green);">Direct Research</div>
+      <p class="route-desc">Direct PhD at IISc/IITs after B.Tech. Fellowship ₹35,000–₹58,000/mo. Publish at top venues.</p>
+    </div>
+  </div>
+
+  <!-- M.Tech Salary Chart -->
+  <div class="glass chart-wrap">
+    <div class="chart-title">M.TECH / RESEARCH EXPERIENCE vs. SALARY TRAJECTORY (₹ LPA)</div>
+    <canvas id="mtechChart" height="260"></canvas>
+  </div>
+
+  <!-- Specializations -->
+  <div style="font-size:13px;font-weight:700;color:var(--subtle);margin-bottom:16px;letter-spacing:.06em;">ADVANCED SPECIALIZATIONS & RESEARCH PATHS</div>
+  <div class="grid-auto-lg" id="specGrid" style="margin-bottom:32px;"></div>
+
+  <a href="step-6-advice.html" class="btn-cyan" style="width:100%;padding:14px;font-size:15px;text-align:center;">📋 Continue to Final Advice & Report →</a>
+</div>
+
+<script>
+const CQ_KEY='cq_state';
+function loadState(){try{return JSON.parse(localStorage.getItem(CQ_KEY)||'{}');}catch{return{};}}
+
+// Guardrail — auto-redirect if horizon !== 6
+const state=loadState();
+if(state.profile?.horizon!==6){window.location.replace('step-6-advice.html');}
+
+const STAGES=[{n:0,l:'Profile'},{n:1,l:'Quiz'},{n:2,l:'Branch'},{n:3,l:'College'},{n:4,l:'Specs'},{n:5,l:'Career'},{n:6,l:'Report'}];
+function renderNav(cur){
+  document.getElementById('stageSteps').innerHTML=STAGES.map((s,i)=>{
+    const st=i<cur?'done':i===cur?'active':'pending';
+    const col=st==='done'?'var(--green)':st==='active'?'var(--blue)':'var(--muted)';
+    const conn=i<STAGES.length-1?`<div class="stage-connector" style="background:${i<cur?'rgba(34,197,94,.3)':'rgba(71,85,105,.2)'}"></div>`:'';
+    return `<div class="stage-dot ${st}">${st==='done'?'✓':s.n}</div><span class="stage-label" style="color:${col}">${s.l}</span>${conn}`;
+  }).join('');
+}
+renderNav(5);
+
+// ── M.Tech Chart ──
+const MTECH_TRAJ=[
+  {r:'0–2 yrs\n(post M.Tech)',min:20,avg:32,max:50},
+  {r:'3–5 yrs',min:40,avg:70,max:120},
+  {r:'6–10 yrs',min:80,avg:150,max:250},
+  {r:'10+ yrs',min:150,avg:350,max:800}
+];
+const ctx=document.getElementById('mtechChart').getContext('2d');
+new Chart(ctx,{
+  type:'line',
+  data:{
+    labels:MTECH_TRAJ.map(t=>t.r),
+    datasets:[
+      {label:'Max',data:MTECH_TRAJ.map(t=>t.max),borderColor:'var(--green)',backgroundColor:'rgba(34,197,94,.12)',borderWidth:2,fill:true,tension:.4,pointRadius:5,pointBackgroundColor:'var(--green)'},
+      {label:'Avg',data:MTECH_TRAJ.map(t=>t.avg),borderColor:'#7c3aed',backgroundColor:'rgba(124,58,237,.12)',borderWidth:2.5,fill:true,tension:.4,pointRadius:5,pointBackgroundColor:'#7c3aed'}
+    ]
+  },
+  options:{
+    responsive:true,
+    plugins:{legend:{labels:{color:'var(--subtle)',font:{family:'Poppins',size:12}}},
+      tooltip:{backgroundColor:'var(--bg)',titleColor:'var(--subtle)',bodyColor:'var(--navy)',
+        callbacks:{label:c=>`${c.dataset.label}: ₹${c.parsed.y} LPA`}}},
+    scales:{
+      x:{grid:{color:'rgba(125,211,252,.06)'},ticks:{color:'var(--muted)',font:{family:'Poppins'}}},
+      y:{grid:{color:'rgba(125,211,252,.06)'},ticks:{color:'var(--muted)',font:{family:'Poppins'},callback:v=>`₹${v}L`}}
+    }
+  }
+});
+
+// ── Specializations ──
+const SPECS=[
+  {name:'M.Tech in AI & Machine Learning',gate:'CS/EC',gre:true,rank:5,pkg:'20–50 LPA',desc:'Transformer architectures, RL, and MLSys. Top placements at Google DeepMind, Meta AI, Microsoft Research.',insts:['IIT Bombay','IIT Delhi','IISc']},
+  {name:'M.Tech in Computer Vision & Robotics',gate:'CS/EC',gre:true,rank:4,pkg:'18–40 LPA',desc:'3D perception, SLAM, autonomous navigation, and multi-modal learning. ISRO, Boston Dynamics, AV startups.',insts:['IIT Kanpur','IIT Madras','IIIT-H']},
+  {name:'M.Tech in VLSI Design',gate:'EC',gre:false,rank:4,pkg:'15–35 LPA',desc:'Physical design, DFT, analog mixed-signal circuits. Core path to Intel, Qualcomm, NVIDIA chip design.',insts:['IIT Kharagpur','NIT Trichy','IISc']},
+  {name:'M.Tech in Data Science',gate:'CS/ST',gre:true,rank:3,pkg:'16–38 LPA',desc:'Large-scale ML systems, statistical inference, and causal modeling. JP Morgan, Goldman Sachs, quant funds.',insts:['IIT Bombay','ISI Kolkata','CMI']},
+  {name:'M.Tech in Cybersecurity',gate:'CS',gre:false,rank:3,pkg:'14–32 LPA',desc:'Formal verification, cryptographic protocols, adversarial ML. CERT-In, DRDO, and Big Tech security teams.',insts:['IIT Kanpur','IIIT Allahabad','IIT Madras']},
+  {name:'M.Tech in Embedded Systems',gate:'EC/CS',gre:false,rank:3,pkg:'12–28 LPA',desc:'RTOS, hardware-software co-design, edge AI. Automotive (Bosch, Continental) and space tech pipeline.',insts:['IIT Bombay','NIT Surathkal','IIT Roorkee']},
+  {name:'MS by Research (Computer Science)',gate:null,gre:true,rank:5,pkg:'25–60 LPA',desc:'Full research degree — publish at NeurIPS, ICML, CVPR. Best path to PhD at MIT, Stanford, CMU.',insts:['IISc','IIT Bombay','TIFR']},
+  {name:'PhD / Direct PhD in ML/AI',gate:null,gre:true,rank:5,pkg:'40–100 LPA (post-PhD)',desc:'The frontier. Five-year commitment with JRF fellowship (₹37,000/mo). Professor roles or Principal Scientist.',insts:['IISc','IITs','CMU / Stanford (abroad)']}
+];
+
+document.getElementById('specGrid').innerHTML=SPECS.map(s=>`
+  <div class="glass spec-card card-hover">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+      <h3 class="spec-name">${s.name}</h3>
+      <span style="font-size:16px;font-weight:800;color:#7c3aed;flex-shrink:0;">★${'★'.repeat(s.rank-1)}</span>
+    </div>
+    <p class="spec-desc">${s.desc}</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+      ${s.gate?`<span class="tag-chip" style="background:rgba(6,182,212,.12);color:var(--blue);border:1px solid rgba(6,182,212,.2);">GATE: ${s.gate}</span>`:''}
+      ${s.gre?`<span class="tag-chip" style="background:rgba(124,58,237,.12);color:var(--purple);border:1px solid rgba(124,58,237,.2);">GRE</span>`:''}
+      <span class="tag-chip" style="background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.2);">💰 ${s.pkg}</span>
+    </div>
+    <p class="inst-line">🏛 ${s.insts.join(' · ')}</p>
+  </div>`).join('');
+</script>
+</body>
+</html>

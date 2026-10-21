@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Stage 5 — Career Trajectory | Career Quest</title>
+<link rel="stylesheet" href="intro.css"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:32px;}
+  .stat-box{padding:14px 16px;text-align:center;}
+  .stat-val{font-size:18px;font-weight:800;line-height:1;}
+  .stat-lbl{font-size:11px;color:var(--muted);margin-top:4px;}
+  .chart-wrap{padding:24px;margin-bottom:32px;}
+  .chart-title{font-size:13px;font-weight:700;color:var(--subtle);margin-bottom:20px;letter-spacing:.06em;}
+
+  .job-card{padding:18px;}
+  .job-title{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:2px;}
+  .job-industry{font-size:11px;color:var(--muted);}
+  .job-salary{font-size:16px;font-weight:800;color:var(--green);}
+  .job-desc{font-size:12px;color:var(--muted);line-height:1.4;margin:8px 0 10px;}
+  .skill-tag{font-size:10px;padding:2px 7px;border-radius:10px;background:rgba(6,182,212,.08);color:var(--blue);border:1px solid rgba(6,182,212,.15);}
+  .outlook-badge{font-size:11px;padding:3px 8px;border-radius:12px;font-weight:700;}
+
+  .matrix-section{padding:24px;margin-bottom:32px;}
+  .matrix-row{margin-bottom:16px;}
+  .matrix-label{font-size:11px;font-weight:700;letter-spacing:.06em;margin-bottom:8px;}
+  .path-chips{display:flex;gap:6px;flex-wrap:wrap;}
+  .path-chip{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid;}
+
+  .nav-row{display:flex;gap:12px;margin-bottom:32px;}
+</style>
+</head>
+<body>
+
+<nav class="stage-nav">
+  <div class="stage-nav-inner">
+    <a href="index.html" class="stage-logo">⚔ Career<span style="color:var(--blue)">Quest</span></a>
+    <div class="stage-steps" id="stageSteps"></div>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <div style="margin-bottom:32px;">
+    <div style="font-size:13px;color:var(--blue);font-weight:700;letter-spacing:.1em;margin-bottom:6px;">STAGE 5 · CAREER TRAJECTORY</div>
+    <h2 style="font-size:30px;font-weight:800;margin:0 0 8px;background:linear-gradient(135deg,var(--navy),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">B.Tech Career & Salary Map</h2>
+    <p id="subline" style="color:var(--muted);font-size:14px;"></p>
+  </div>
+
+  <!-- Summary Stats -->
+  <div class="stat-row" id="statRow"></div>
+
+  <!-- Chart -->
+  <div class="glass chart-wrap">
+    <div class="chart-title">EXPERIENCE vs. SALARY TRAJECTORY (₹ LPA)</div>
+    <canvas id="salaryChart" height="280"></canvas>
+  </div>
+
+  <!-- Job Cards -->
+  <div style="font-size:13px;font-weight:700;color:var(--subtle);margin-bottom:16px;letter-spacing:.06em;">JOB ROLE FEASIBILITY CARDS</div>
+  <div class="grid-auto" id="jobGrid" style="margin-bottom:32px;"></div>
+
+  <!-- Selection Comparison Matrix -->
+  <div class="glass matrix-section">
+    <div style="font-size:13px;font-weight:700;color:var(--subtle);margin-bottom:8px;letter-spacing:.06em;">SELECTION COMPARISON MATRIX</div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:16px;">
+      <span style="color:var(--green);font-weight:700;">■ Green</span> = Your chosen path &nbsp;·&nbsp;
+      <span style="color:var(--muted);font-weight:700;">■ Grey</span> = Alternatives not taken
+    </p>
+    <div id="matrix"></div>
+  </div>
+
+  <!-- Bottom Nav -->
+  <div class="nav-row" id="navRow"></div>
+</div>
+
+<script>
+const CQ_KEY='cq_state';
+function loadState(){try{return JSON.parse(localStorage.getItem(CQ_KEY)||'{}');}catch{return{};}}
+
+const STAGES=[{n:0,l:'Profile'},{n:1,l:'Quiz'},{n:2,l:'Branch'},{n:3,l:'College'},{n:4,l:'Specs'},{n:5,l:'Career'},{n:6,l:'Report'}];
+function renderNav(cur){
+  document.getElementById('stageSteps').innerHTML=STAGES.map((s,i)=>{
+    const st=i<cur?'done':i===cur?'active':'pending';
+    const col=st==='done'?'var(--green)':st==='active'?'var(--blue)':'var(--muted)';
+    const conn=i<STAGES.length-1?`<div class="stage-connector" style="background:${i<cur?'rgba(34,197,94,.3)':'rgba(71,85,105,.2)'}"></div>`:'';
+    return `<div class="stage-dot ${st}">${st==='done'?'✓':s.n}</div><span class="stage-label" style="color:${col}">${s.l}</span>${conn}`;
+  }).join('');
+}
+renderNav(5);
+
+const TRAJECTORY={
+  1:[{r:'0–2 yrs',min:12,avg:20,max:30},{r:'3–5 yrs',min:25,avg:40,max:60},{r:'6–10 yrs',min:50,avg:90,max:150},{r:'10+ yrs',min:100,avg:220,max:500}],
+  2:[{r:'0–2 yrs',min:6,avg:11,max:18},{r:'3–5 yrs',min:12,avg:22,max:35},{r:'6–10 yrs',min:25,avg:45,max:70},{r:'10+ yrs',min:50,avg:100,max:180}],
+  3:[{r:'0–2 yrs',min:3,avg:5,max:8},{r:'3–5 yrs',min:6,avg:10,max:16},{r:'6–10 yrs',min:12,avg:22,max:35},{r:'10+ yrs',min:25,avg:50,max:80}]
+};
+
+const JOB_CARDS={
+  aiml:[
+    {title:'Machine Learning Engineer',industry:'Tech / Product',salary:28,outlook:'Exceptional',desc:'Build, train, and deploy ML models at production scale.',skills:['Python','PyTorch','MLflow','SQL'],tiers:[1,2,3]},
+    {title:'AI Research Scientist',industry:'Research / Big Tech',salary:45,outlook:'Outstanding',desc:'Publish novel ML research and push the frontier of AI capabilities.',skills:['Research','PyTorch','Math'],tiers:[1]},
+    {title:'Data Scientist',industry:'Finance / E-Commerce',salary:18,outlook:'High',desc:'Derive business insights from data to drive cross-functional decisions.',skills:['Python','SQL','Statistics'],tiers:[1,2,3]},
+    {title:'NLP Engineer',industry:'AI Product / SaaS',salary:32,outlook:'Exceptional',desc:'Build language understanding systems — chatbots, summarizers, search.',skills:['HuggingFace','LLMs','Python'],tiers:[1,2]},
+    {title:'Computer Vision Engineer',industry:'Automotive / Healthcare',salary:26,outlook:'High',desc:'Enable machines to understand visual data from medical imaging to AVs.',skills:['OpenCV','YOLO','PyTorch'],tiers:[1,2]},
+    {title:'MLOps Engineer',industry:'Fintech / Platform',salary:24,outlook:'Very High',desc:'Keep ML systems reliable, scalable, and reproducible in production.',skills:['Kubernetes','Docker','Airflow'],tiers:[1,2,3]}
+  ],
+  cse:[
+    {title:'Software Engineer (SWE)',industry:'Tech / All Sectors',salary:20,outlook:'High',desc:'Design and build software systems powering products used by millions.',skills:['DSA','System Design','Java'],tiers:[1,2,3]},
+    {title:'Backend Engineer',industry:'Startup / Scale-up',salary:22,outlook:'High',desc:'Build server-side infrastructure handling business logic and data.',skills:['Go','PostgreSQL','Redis'],tiers:[1,2,3]},
+    {title:'Site Reliability Engineer',industry:'Infrastructure / Cloud',salary:28,outlook:'Very High',desc:'Ensure large-scale systems stay available, fast, and resilient.',skills:['Linux','Terraform','Prometheus'],tiers:[1,2]},
+    {title:'Full-Stack Engineer',industry:'Product / Agency',salary:16,outlook:'Moderate',desc:'Own the complete web stack from UI to database and APIs.',skills:['React','Node.js','Docker'],tiers:[1,2,3]}
+  ]
+};
+const DEFAULT_JOBS=[
+  {title:'Graduate Engineer Trainee',industry:'Core Industry',salary:6,outlook:'Moderate',desc:'Entry-level engineering role at an established manufacturing or services firm.',skills:['Domain Knowledge','Excel','AutoCAD'],tiers:[1,2,3]},
+  {title:'Technical Sales Engineer',industry:'B2B / Enterprise',salary:8,outlook:'Moderate-High',desc:'Bridge engineering and business — sell complex technical products and solutions.',skills:['Communication','Domain','CRM'],tiers:[1,2,3]},
+  {title:'PSU Officer (via GATE)',industry:'Government / PSU',salary:10,outlook:'High',desc:'Join BHEL, ONGC, NTPC, or ISRO as a junior engineer or scientist.',skills:['GATE','Domain Knowledge'],tiers:[1,2,3]}
+];
+
+const ALL_BRANCHES=[
+  {id:'aiml',name:'AI/ML',icon:'🧠'},{id:'cse',name:'CSE',icon:'💻'},{id:'ece',name:'ECE',icon:'📡'},
+  {id:'data_science',name:'DS&A',icon:'📊'},{id:'cybersec',name:'CyberSec',icon:'🔒'},{id:'robotics',name:'Robotics',icon:'🤖'},
+  {id:'mech',name:'Mech',icon:'⚙️'},{id:'civil',name:'Civil',icon:'🏗️'},{id:'eee',name:'EEE',icon:'⚡'},
+  {id:'aerospace',name:'Aero',icon:'🚀'},{id:'biotech',name:'Biotech',icon:'🧬'},{id:'chemical',name:'ChemE',icon:'⚗️'}
+];
+const ALL_COLLEGES=[
+  {id:1,name:'IIT Bombay',tier:1},{id:2,name:'IIT Delhi',tier:1},{id:3,name:'BITS Pilani',tier:1},{id:4,name:'NIT Trichy',tier:1},
+  {id:5,name:'VIT Vellore',tier:2},{id:6,name:'Manipal IT',tier:2},{id:7,name:'SRM SIST',tier:2},
+  {id:8,name:'Thapar',tier:2},{id:9,name:'Amrita',tier:2},
+  {id:10,name:'SPPU Colleges',tier:3},{id:11,name:'Dr. BATU',tier:3}
+];
+
+// ── Load state ──
+const state=loadState();
+const tierRaw=parseInt((state.selectedTier||'Tier 2').replace('Tier ',''))||2;
+const traj=TRAJECTORY[tierRaw]||TRAJECTORY[2];
+const branchId=state.selectedBranch||'aiml';
+const college=ALL_COLLEGES.find(c=>c.id===state.selectedCollege);
+
+document.getElementById('subline').textContent=`${branchId.toUpperCase()} · ${college?.name||'Selected College'} (${state.selectedTier||'Tier 2'})`;
+
+// ── Stats ──
+document.getElementById('statRow').innerHTML=[
+  {label:'Starting Package',val:'₹'+traj[0].avg+' LPA',color:'var(--blue)'},
+  {label:'Mid-Career (5yr)',val:'₹'+traj[1].avg+' LPA',color:'#7c3aed'},
+  {label:'Senior (10yr)',val:'₹'+traj[2].avg+' LPA',color:'#f59e0b'},
+  {label:'Peak Potential',val:'₹'+traj[3].max+' LPA',color:'var(--green)'}
+].map(s=>`<div class="glass stat-box"><div class="stat-val" style="color:${s.color}">${s.val}</div><div class="stat-lbl">${s.label}</div></div>`).join('');
+
+// ── Chart ──
+const ctx=document.getElementById('salaryChart').getContext('2d');
+new Chart(ctx,{
+  type:'line',
+  data:{
+    labels:traj.map(t=>t.r),
+    datasets:[
+      {label:'Max',data:traj.map(t=>t.max),borderColor:'var(--green)',backgroundColor:'rgba(34,197,94,.12)',borderWidth:2,fill:true,tension:.4,pointBackgroundColor:'var(--green)',pointRadius:5},
+      {label:'Avg',data:traj.map(t=>t.avg),borderColor:'var(--blue)',backgroundColor:'rgba(6,182,212,.12)',borderWidth:2.5,fill:true,tension:.4,pointBackgroundColor:'var(--blue)',pointRadius:5},
+      {label:'Min',data:traj.map(t=>t.min),borderColor:'#7c3aed',backgroundColor:'rgba(124,58,237,.08)',borderWidth:1.5,fill:true,tension:.4,pointBackgroundColor:'#7c3aed',pointRadius:4}
+    ]
+  },
+  options:{
+    responsive:true,
+    plugins:{
+      legend:{labels:{color:'var(--subtle)',font:{family:'Poppins',size:12}}},
+      tooltip:{backgroundColor:'var(--bg)',titleColor:'var(--subtle)',bodyColor:'var(--navy)',
+        callbacks:{label:ctx=>`${ctx.dataset.label}: ₹${ctx.parsed.y} LPA`}}
+    },
+    scales:{
+      x:{grid:{color:'rgba(125,211,252,.06)'},ticks:{color:'var(--muted)',font:{family:'Poppins'}}},
+      y:{grid:{color:'rgba(125,211,252,.06)'},ticks:{color:'var(--muted)',font:{family:'Poppins'},callback:v=>`₹${v}L`},title:{display:true,text:'₹ LPA',color:'var(--muted)',font:{family:'Poppins'}}}
+    }
+  }
+});
+
+// ── Job Cards ──
+const rawJobs=JOB_CARDS[branchId]||DEFAULT_JOBS;
+const jobs=rawJobs.filter(j=>j.tiers.includes(tierRaw));
+const OUTLOOK_COLOR={Exceptional:'var(--green)',Outstanding:'var(--blue)','Very High':'var(--blue)',High:'var(--blue)',Moderate:'var(--subtle)','Moderate-High':'var(--subtle)'};
+document.getElementById('jobGrid').innerHTML=jobs.map(j=>`
+  <div class="glass job-card card-hover">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+      <div><div class="job-title">${j.title}</div><div class="job-industry">${j.industry}</div></div>
+      <span class="outlook-badge" style="background:${OUTLOOK_COLOR[j.outlook]||'var(--subtle)'}22;color:${OUTLOOK_COLOR[j.outlook]||'var(--subtle)'};flex-shrink:0;margin-left:8px;">${j.outlook}</span>
+    </div>
+    <p class="job-desc">${j.desc}</p>
+    <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px;">
+      ${j.skills.map(s=>`<span class="skill-tag">${s}</span>`).join('')}
+    </div>
+    <div class="job-salary">₹${j.salary} LPA <span style="font-size:11px;color:var(--muted);font-weight:400;">avg</span></div>
+  </div>`).join('');
+
+// ── Selection Matrix ──
+const selBranch=state.selectedBranch;
+const selCollege=state.selectedCollege;
+const selTier=parseInt((state.selectedTier||'Tier 2').replace('Tier ',''))||2;
+
+document.getElementById('matrix').innerHTML=[
+  {label:'BRANCH',color:'var(--blue)',items:ALL_BRANCHES.map(b=>({key:b.id,label:`${b.icon} ${b.name}`,sel:b.id===selBranch}))},
+  {label:'COLLEGE',color:'#7c3aed',items:ALL_COLLEGES.map(c=>({key:c.id,label:c.name,sel:c.id===selCollege}))},
+  {label:'TIER',color:'var(--green)',items:[{key:1,label:'Tier 1',sel:selTier===1},{key:2,label:'Tier 2',sel:selTier===2},{key:3,label:'Tier 3',sel:selTier===3}]}
+].map(row=>`<div class="matrix-row">
+  <div class="matrix-label" style="color:${row.color}">${row.label}</div>
+  <div class="path-chips">${row.items.map(it=>`
+    <span class="path-chip ${it.sel?'path-selected':'path-unselected'}">
+      ${it.sel?'✓ ':''} ${it.label}
+    </span>`).join('')}</div>
+</div>`).join('');
+
+// ── Bottom Nav ──
+const horizon=state.profile?.horizon||4;
+document.getElementById('navRow').innerHTML=`
+  ${horizon===6?`<a href="step-5b-mtech.html" class="btn-purple" style="flex:1;padding:14px;font-size:15px;">🎓 Explore M.Tech Path (6-yr) →</a>`:''}
+  <a href="step-6-advice.html" class="btn-cyan" style="flex:1;padding:14px;font-size:15px;">📋 Get Advice & Download Report →</a>`;
+</script>
+</body>
+</html>

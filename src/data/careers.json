@@ -1,0 +1,46 @@
+{
+  "salaryTrajectory": {
+    "tier1": [
+      { "range": "0–2 yrs", "min": 1200000, "max": 3000000, "avg": 2000000, "roles": ["SWE I", "Junior ML Engineer", "Graduate Engineer Trainee"] },
+      { "range": "3–5 yrs", "min": 2500000, "max": 6000000, "avg": 4000000, "roles": ["SWE II", "Senior Engineer", "ML Engineer II"] },
+      { "range": "6–10 yrs", "min": 5000000, "max": 15000000, "avg": 9000000, "roles": ["Staff Engineer", "Engineering Manager", "Principal Engineer"] },
+      { "range": "10+ yrs", "min": 10000000, "max": 50000000, "avg": 22000000, "roles": ["Director Eng.", "Distinguished Engineer", "VP Engineering"] }
+    ],
+    "tier2": [
+      { "range": "0–2 yrs", "min": 600000, "max": 1800000, "avg": 1100000, "roles": ["Junior Developer", "Trainee Engineer", "Analyst"] },
+      { "range": "3–5 yrs", "min": 1200000, "max": 3500000, "avg": 2200000, "roles": ["Software Engineer", "ML Developer", "Senior Analyst"] },
+      { "range": "6–10 yrs", "min": 2500000, "max": 7000000, "avg": 4500000, "roles": ["Senior Developer", "Tech Lead", "Product Manager"] },
+      { "range": "10+ yrs", "min": 5000000, "max": 18000000, "avg": 10000000, "roles": ["Engineering Manager", "Architect", "CTO (Startup)"] }
+    ],
+    "tier3": [
+      { "range": "0–2 yrs", "min": 300000, "max": 800000, "avg": 500000, "roles": ["Trainee", "Junior Engineer", "Fresher"] },
+      { "range": "3–5 yrs", "min": 600000, "max": 1600000, "avg": 1000000, "roles": ["Software Developer", "Systems Analyst", "Engineer"] },
+      { "range": "6–10 yrs", "min": 1200000, "max": 3500000, "avg": 2200000, "roles": ["Senior Engineer", "Team Lead", "Project Manager"] },
+      { "range": "10+ yrs", "min": 2500000, "max": 8000000, "avg": 5000000, "roles": ["Engineering Manager", "Solutions Architect", "Director"] }
+    ]
+  },
+  "mtechSalary": {
+    "tier1": [
+      { "range": "0–2 yrs (post M.Tech)", "min": 2000000, "max": 5000000, "avg": 3200000, "roles": ["Research Engineer", "Senior ML Scientist", "Specialist"] },
+      { "range": "3–5 yrs", "min": 4000000, "max": 12000000, "avg": 7000000, "roles": ["Principal Scientist", "Research Lead", "Staff Engineer"] },
+      { "range": "6–10 yrs", "min": 8000000, "max": 25000000, "avg": 15000000, "roles": ["Research Director", "Principal Engineer", "AI/ML Manager"] },
+      { "range": "10+ yrs", "min": 15000000, "max": 80000000, "avg": 35000000, "roles": ["VP Research", "Chief Scientist", "Distinguished Researcher"] }
+    ]
+  },
+  "jobCards": {
+    "aiml": [
+      { "title": "Machine Learning Engineer", "industry": "Tech / Product", "avgSalary": 2800000, "growthOutlook": "Exceptional", "skills": ["Python", "PyTorch", "MLflow", "SQL"], "tierEligible": [1, 2, 3], "description": "Build, train, and deploy ML models that power product features at scale." },
+      { "title": "AI Research Scientist", "industry": "Research / Big Tech", "avgSalary": 4500000, "growthOutlook": "Outstanding", "skills": ["Research", "PyTorch", "Academic Writing", "Math"], "tierEligible": [1], "description": "Publish novel ML research and push the frontier of AI capabilities." },
+      { "title": "Data Scientist", "industry": "Finance / E-Commerce", "avgSalary": 1800000, "growthOutlook": "High", "skills": ["Python", "SQL", "Statistics", "Storytelling"], "tierEligible": [1, 2, 3], "description": "Derive business insights from data to drive decisions across functions." },
+      { "title": "NLP Engineer", "industry": "AI Product / SaaS", "avgSalary": 3200000, "growthOutlook": "Exceptional", "skills": ["HuggingFace", "LLMs", "Python", "RAG"], "tierEligible": [1, 2], "description": "Build language understanding systems — chatbots, summarizers, search." },
+      { "title": "Computer Vision Engineer", "industry": "Automotive / Healthcare", "avgSalary": 2600000, "growthOutlook": "High", "skills": ["OpenCV", "YOLO", "PyTorch", "C++"], "tierEligible": [1, 2], "description": "Enable machines to understand visual data — medical imaging to autonomous vehicles." },
+      { "title": "MLOps Engineer", "industry": "Fintech / Platform", "avgSalary": 2400000, "growthOutlook": "Very High", "skills": ["Kubernetes", "Docker", "Airflow", "Terraform"], "tierEligible": [1, 2, 3], "description": "Keep ML systems reliable, scalable, and reproducible in production." }
+    ],
+    "cse": [
+      { "title": "Software Engineer (SWE)", "industry": "Tech / All Sectors", "avgSalary": 2000000, "growthOutlook": "High", "skills": ["DSA", "System Design", "Java/Python", "SQL"], "tierEligible": [1, 2, 3], "description": "Design and build software systems that power products used by millions." },
+      { "title": "Backend Engineer", "industry": "Startup / Scale-up", "avgSalary": 2200000, "growthOutlook": "High", "skills": ["Go", "PostgreSQL", "Redis", "Kubernetes"], "tierEligible": [1, 2, 3], "description": "Build the server-side infrastructure that handles business logic and data." },
+      { "title": "Site Reliability Engineer", "industry": "Infrastructure / Cloud", "avgSalary": 2800000, "growthOutlook": "Very High", "skills": ["Linux", "Terraform", "Prometheus", "Go"], "tierEligible": [1, 2], "description": "Ensure large-scale systems stay available, fast, and resilient under load." },
+      { "title": "Full-Stack Engineer", "industry": "Product / Agency", "avgSalary": 1600000, "growthOutlook": "Moderate-High", "skills": ["React", "Node.js", "PostgreSQL", "Docker"], "tierEligible": [1, 2, 3], "description": "Own the complete web stack from UI to database and API design." }
+    ]
+  }
+}
